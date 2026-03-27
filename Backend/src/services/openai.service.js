@@ -4,6 +4,7 @@ import { Conversation } from "../models/Conversation.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { allTools } from "../ai/tools/index.js";
 import { executeTool } from "../ai/agent.js";
+import { runAgent } from "../ai/agent.js";
 
 // Initialize OpenAI client once
 const openai = new OpenAI({
@@ -72,7 +73,7 @@ export const sendMessage = async (userId, userMessage) => {
   ];
 
   // Run the agent loop
-  const { finalMessage, toolsUsed } = await runAgentLoop(
+  const { finalMessage, toolsUsed } = await runAgent(
     messages,
     userId,
     conversation

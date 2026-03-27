@@ -3,7 +3,7 @@ import { z } from "zod";
 export const createReservationSchema = z.object({
   restaurantId: z
     .string({ required_error: "Restaurant ID is required" })
-    .regex(/^[a-f\d]{24}$/i, "Invalid restaurant ID"), // MongoDB ObjectId check
+    .regex(/^[a-f\d]{24}$/i, "Invalid restaurant ID"),
 
   date: z
     .string({ required_error: "Date is required" })
@@ -16,33 +16,27 @@ export const createReservationSchema = z.object({
 
   time: z
     .string({ required_error: "Time is required" })
-    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format. Use HH:MM"),
+    .regex(
+      /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
+      "Invalid time format. Use HH:MM",
+    ),
 
-  guests: z
-    .number({ required_error: "Number of guests is required" })
-    .int()
-    .min(1, "At least 1 guest required")
-    .max(20, "Maximum 20 guests allowed"),
+  guests: z.union([
+    z.number().int().min(1).max(20),
+    z.string().transform((val) => parseInt(val, 10)),
+  ]),
 
-  specialRequests: z
-    .string()
-    .trim()
-    .max(200, "Special requests too long")
-    .optional(),
+  specialRequests: z.string().trim().max(200).optional(),
 });
 
 export const cancelReservationSchema = z.object({
-  cancelReason: z
-    .string()
-    .trim()
-    .max(200)
-    .optional(),
+  cancelReason: z.string().trim().max(200).optional(),
 });
 
 export const updateReservationSchema = z.object({
   date: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD")
     .refine((date) => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -56,15 +50,11 @@ export const updateReservationSchema = z.object({
     .optional(),
 
   guests: z
-    .number()
-    .int()
-    .min(1)
-    .max(20)
+    .union([
+      z.number().int().min(1).max(20),
+      z.string().transform((val) => parseInt(val, 10)),
+    ])
     .optional(),
 
-  specialRequests: z
-    .string()
-    .trim()
-    .max(200)
-    .optional(),
+  specialRequests: z.string().trim().max(200).optional(),
 });

@@ -3,10 +3,15 @@ import { ENV } from "../config/env.js";
 
 // Create transporter once — reuse everywhere
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: ENV.MAIL.HOST,
+  port: Number(ENV.MAIL.PORT), // convert to number!
+  secure: false, // false for port 587, true for port 465
   auth: {
     user: ENV.MAIL.USER,
     pass: ENV.MAIL.PASS,
+  },
+  tls: {
+    rejectUnauthorized: false, // helps in local development
   },
 });
 

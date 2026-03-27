@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import crypto from "crypto";
 import { User } from "../models/User.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ENV } from "../config/env.js";

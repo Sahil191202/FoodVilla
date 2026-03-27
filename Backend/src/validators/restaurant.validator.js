@@ -63,14 +63,17 @@ export const createRestaurantSchema = z.object({
 
 export const searchRestaurantSchema = z.object({
   cuisine: z.enum(CUISINE_TYPES).optional(),
+
   area: z.string().trim().optional(),
+
   date: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
     .optional(),
+
   guests: z
     .string()
-    .transform(Number) // query params come as string so convert!
+    .transform(Number)
     .pipe(z.number().min(1).max(20))
     .optional(),
-});
+}).optional(); // whole schema optional — empty query is fine too!

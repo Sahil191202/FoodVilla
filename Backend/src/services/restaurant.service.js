@@ -17,36 +17,48 @@ export const searchRestaurants = async ({ cuisine, area, date, guests }) => {
   }
 
   if (area) {
-    // Case insensitive search
     query["address.area"] = { $regex: area, $options: "i" };
   }
 
   let restaurants = await Restaurant.find(query).select("-managedBy");
 
-  // If date and guests provided, filter by availability
   if (date && guests) {
+    const numGuests = Number(guests);
+
     const availableRestaurants = [];
 
     for (const restaurant of restaurants) {
-      // Check if restaurant is open that day
       const dayName = getDayName(date);
       const hours = restaurant.operatingHours[dayName];
 
-      if (hours?.isClosed) continue;
+      // Skip if restaurant closed that day
+      if (!hours || hours.isClosed) {
+        console.log(`${restaurant.name} is closed on ${dayName} — skipping`);
+        continue;
+      }
 
-      // Check if any slot has enough seats
-      const slots = await TimeSlot.find({
+      // Check existing slots in DB
+      const bookedSlots = await TimeSlot.find({
         restaurant: restaurant._id,
         date,
-        availableSeats: { $gte: guests },
         isAvailable: true,
       });
 
-      if (slots.length > 0) {
+      if (bookedSlots.length === 0) {
+        if (restaurant.totalSeats >= numGuests) {
+          availableRestaurants.push(restaurant);
+        }
+        continue;
+      }
+      // Slots exist — check if any slot has enough seats
+      const hasAvailableSlot = bookedSlots.some(
+        (slot) => slot.availableSeats >= numGuests
+      );
+
+      if (hasAvailableSlot) {
         availableRestaurants.push(restaurant);
       }
     }
-
     return availableRestaurants;
   }
 
