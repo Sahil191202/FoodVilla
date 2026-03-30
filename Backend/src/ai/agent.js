@@ -3,7 +3,7 @@ import { allTools } from "./tools/index.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ENV } from "../config/env.js";
 
-// ✅ Static imports — no dynamic imports!
+// ✅ Importing Tools
 import { executeSearchRestaurants } from "./tools/searchRestaurants.tool.js";
 import { executeCheckAvailability } from "./tools/checkAvailability.tool.js";
 import { executeMakeReservation } from "./tools/makeReservation.tool.js";
@@ -11,7 +11,7 @@ import { executeCancelReservation } from "./tools/cancelReservation.tool.js";
 import { executeGetMenu } from "./tools/getMenu.tool.js";
 import { executeGetUserReservations } from "./tools/getUserReservations.tool.js";
 
-// ✅ Define map at top level — not inside function!
+// ✅ Defining It On Top Level
 const toolExecutors = {
   searchRestaurants: executeSearchRestaurants,
   checkAvailability: executeCheckAvailability,
