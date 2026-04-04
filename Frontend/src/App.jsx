@@ -1,13 +1,17 @@
-import React from "react";
+import AppRoutes from "./routes/AppRoutes.jsx";
+import ChatWindow from "./components/chat/ChatWindow.jsx";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "./features/auth/authSlice.js";
 
 const App = () => {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
   return (
-    <div>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      <h2>hello Duniya</h2>
-      <h3>Namaste World</h3>
-      <h4>Hello Bhailog</h4>
-    </div>
+    <>
+      <AppRoutes />
+      {/* Global floating chat — shown on all pages when logged in! */}
+      {isAuthenticated && <ChatWindow />}
+    </>
   );
 };
 
