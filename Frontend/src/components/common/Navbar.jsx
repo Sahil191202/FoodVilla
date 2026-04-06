@@ -17,7 +17,8 @@ import Avatar from "../ui/Avatar.jsx";
 import Button from "../ui/Button.jsx";
 import { cn } from "../../utils/cn.js";
 import { useIsAdmin } from "../../hooks/useAdmin.js";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, Store } from "lucide-react";
+import { useIsOwner } from "../../hooks/useOwner.js";
 
 const navLinks = [
   { label: "Restaurants", href: "/restaurants" },
@@ -136,6 +137,17 @@ const Navbar = () => {
                           <CalendarDays size={16} className="text-gray-400" />
                           My Reservations
                         </Link>
+
+                        {useIsOwner && (
+                          <Link
+                            to="/owner"
+                            onClick={() => setIsProfileOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          >
+                            <Store size={16} className="text-gray-400" />
+                            Owner Dashboard
+                          </Link>
+                        )}
 
                         {isAdmin && (
                           <Link

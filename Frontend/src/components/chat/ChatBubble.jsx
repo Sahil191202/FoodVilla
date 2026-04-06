@@ -1,3 +1,4 @@
+import ReactMarkdown from "react-markdown";
 import { cn } from "../../utils/cn.js";
 import Avatar from "../ui/Avatar.jsx";
 import { useSelector } from "react-redux";
@@ -27,19 +28,63 @@ const ChatBubble = ({ message }) => {
       {/* Bubble */}
       <div
         className={cn(
-          "max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
+          "max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
           isUser
             ? "bg-primary-500 text-white rounded-br-sm"
             : "bg-white border border-gray-100 text-gray-800 shadow-sm rounded-bl-sm"
         )}
       >
-        {/* Render message with line breaks */}
-        {message.content.split("\n").map((line, i) => (
-          <span key={i}>
-            {line}
-            {i < message.content.split("\n").length - 1 && <br />}
-          </span>
-        ))}
+        {isUser ? (
+          // User message — plain text
+          <p>{message.content}</p>
+        ) : (
+          // AI message — render markdown + images!
+          <ReactMarkdown
+            components={{
+              // ✅ Render images inline
+              img: ({ src, alt }) => (
+                <img
+                  src={src}
+                  alt={alt}
+                  className="rounded-xl mt-2 mb-1 max-w-full object-cover max-h-40 w-full"
+                  onError={(e) => {
+                    e.target.style.display = "none";
+                  }}
+                />
+              ),
+              // Bold text
+              strong: ({ children }) => (
+                <strong className="font-semibold">{children}</strong>
+              ),
+              // Links
+              a: ({ href, children }) => (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-500 underline"
+                >
+                  {children}
+                </a>
+              ),
+              // Paragraphs
+              p: ({ children }) => (
+                <p className="mb-1 last:mb-0">{children}</p>
+              ),
+              // Lists
+              ul: ({ children }) => (
+                <ul className="list-disc list-inside space-y-1 my-1">
+                  {children}
+                </ul>
+              ),
+              li: ({ children }) => (
+                <li className="text-sm">{children}</li>
+              ),
+            }}
+          >
+            {message.content}
+          </ReactMarkdown>
+        )}
       </div>
     </div>
   );

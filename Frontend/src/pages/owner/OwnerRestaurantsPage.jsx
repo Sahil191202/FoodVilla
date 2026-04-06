@@ -486,7 +486,7 @@ const OwnerRestaurantsPage = () => {
               className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
             >
               {/* Image */}
-              <div className="relative h-44 bg-gradient-to-br from-primary-50 to-primary-100">
+              <div className="relative h-44 bg-linear-to-br from-primary-50 to-primary-100">
                 {r.images?.length > 0 ? (
                   <img
                     src={r.images[0]}
