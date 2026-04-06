@@ -17,7 +17,7 @@ const menuItemSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      required: true, // Starters, Main Course, Desserts, Drinks
+      required: true,
       trim: true,
     },
     isVeg: {
@@ -28,11 +28,41 @@ const menuItemSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    // ✅ Image URL from Cloudinary
     image: {
       type: String,
+      default: null,
+    },
+    // ✅ Cloudinary public_id for deletion
+    imagePublicId: {
+      type: String,
+      default: null,
+      select: false, // dont send to frontend
+    },
+    // ✅ Spice level for AI suggestions
+    spiceLevel: {
+      type: String,
+      enum: ["mild", "medium", "hot", "extra_hot"],
+      default: "medium",
+    },
+    // ✅ Tags for AI filtering
+    tags: [
+      {
+        type: String,
+        // e.g. "bestseller", "new", "healthy", "spicy"
+      },
+    ],
+    // ✅ Nutritional info — optional
+    calories: {
+      type: Number,
+      default: null,
+    },
+    preparationTime: {
+      type: Number, // in minutes
+      default: null,
     },
   },
-  { _id: true }
+  { _id: true, timestamps: true }
 );
 
 const menuSchema = new mongoose.Schema(
@@ -41,7 +71,7 @@ const menuSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Restaurant",
       required: true,
-      unique: true, // one menu per restaurant
+      unique: true,
     },
     items: [menuItemSchema],
     isActive: {
@@ -51,5 +81,8 @@ const menuSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Index for faster search
+menuSchema.index({ restaurant: 1, isActive: 1 });
 
 export const Menu = mongoose.model("Menu", menuSchema);

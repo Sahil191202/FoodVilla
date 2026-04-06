@@ -10,6 +10,7 @@ import { executeMakeReservation } from "./tools/makeReservation.tool.js";
 import { executeCancelReservation } from "./tools/cancelReservation.tool.js";
 import { executeGetMenu } from "./tools/getMenu.tool.js";
 import { executeGetUserReservations } from "./tools/getUserReservations.tool.js";
+import { executeUpsellMenu, upsellMenuTool } from "./tools/upsellMenu.tool.js";
 
 // ✅ Defining It On Top Level
 const toolExecutors = {
@@ -19,11 +20,13 @@ const toolExecutors = {
   cancelReservation: executeCancelReservation,
   getMenu: executeGetMenu,
   getUserReservations: executeGetUserReservations,
+  upsellMenuTool: executeUpsellMenu,
 };
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const SYSTEM_PROMPT = `You are GoodFoods AI — a restaurant booking assistant for Mumbai, India.
+const SYSTEM_PROMPT = `You are GoodFoods AI — a restaurant booking 
+assistant for Mumbai, India.
 
 You help users:
 1. Find restaurants by cuisine and area
@@ -36,14 +39,22 @@ You help users:
 Rules:
 - Always confirm details before booking or cancelling
 - Use tools to get real data — never make up restaurants
-- IMPORTANT: Always convert dates to YYYY-MM-DD format before passing to any tool
+- IMPORTANT: Always convert dates to YYYY-MM-DD format
   - "today" = ${new Date().toISOString().split("T")[0]}
   - "tomorrow" = ${new Date(Date.now() + 86400000).toISOString().split("T")[0]}
-  - Always calculate actual date for "this Saturday", "next Friday" etc
 - Use INR for prices
 - After booking show confirmation code clearly
+- ALWAYS call upsellMenu after makeReservation — suggest food!
+- Show menu images when available using markdown: ![name](imageUrl)
 - Be friendly and conversational
-- Call only ONE tool at a time`;
+- Call only ONE tool at a time
+
+Upsell flow:
+After every successful booking:
+1. Show confirmation code
+2. Call upsellMenu tool
+3. Suggest 2-3 items with images
+4. Ask if user wants to note any preferences`;
 
 const callGroq = async (params, retries = 3) => {
   for (let attempt = 1; attempt <= retries; attempt++) {
@@ -53,7 +64,7 @@ const callGroq = async (params, retries = 3) => {
       console.error(
         `Groq attempt ${attempt} failed:`,
         error?.status,
-        error?.message
+        error?.message,
       );
 
       if (error?.status === 400) {
@@ -64,7 +75,7 @@ const callGroq = async (params, retries = 3) => {
         }
         throw new ApiError(
           500,
-          "AI could not process the request. Please rephrase and try again."
+          "AI could not process the request. Please rephrase and try again.",
         );
       }
 
@@ -76,7 +87,10 @@ const callGroq = async (params, retries = 3) => {
       }
 
       if (error?.status === 429) {
-        throw new ApiError(429, "AI service is busy. Please try again in a moment.");
+        throw new ApiError(
+          429,
+          "AI service is busy. Please try again in a moment.",
+        );
       }
       if (error?.status === 401) {
         throw new ApiError(500, "Invalid Groq API key.");
@@ -133,7 +147,7 @@ export const runAgent = async (messages, userId) => {
       if (ENV.NODE_ENV === "development") {
         console.log(
           "Tools requested:",
-          assistantMessage.tool_calls.map((t) => t.function.name)
+          assistantMessage.tool_calls.map((t) => t.function.name),
         );
       }
 
@@ -191,7 +205,7 @@ export const runAgent = async (messages, userId) => {
           if (ENV.NODE_ENV === "development") {
             console.log(
               `Result from ${toolName}:`,
-              JSON.stringify(result, null, 2)
+              JSON.stringify(result, null, 2),
             );
           }
 
@@ -200,7 +214,7 @@ export const runAgent = async (messages, userId) => {
             tool_call_id: toolCall.id,
             content: JSON.stringify(result),
           };
-        })
+        }),
       );
 
       fullMessages.push(...toolResultMessages);
@@ -234,7 +248,7 @@ export const runAgent = async (messages, userId) => {
     if (finishReason === "content_filter") {
       throw new ApiError(
         400,
-        "Your message could not be processed. Please rephrase and try again."
+        "Your message could not be processed. Please rephrase and try again.",
       );
     }
 

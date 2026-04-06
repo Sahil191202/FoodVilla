@@ -3,18 +3,9 @@ import { CUISINE_TYPES } from "../utils/constants.js";
 
 const operatingHoursSchema = new mongoose.Schema(
   {
-    open: {
-      type: String,
-      required: true, // "09:00"
-    },
-    close: {
-      type: String,
-      required: true, // "22:00"
-    },
-    isClosed: {
-      type: Boolean,
-      default: false, // for holidays or weekly off
-    },
+    open: { type: String, required: true },
+    close: { type: String, required: true },
+    isClosed: { type: Boolean, default: false },
   },
   { _id: false }
 );
@@ -39,7 +30,7 @@ const restaurantSchema = new mongoose.Schema(
     ],
     address: {
       street: { type: String, required: true },
-      area: { type: String, required: true },   // Koramangala, Indiranagar etc
+      area: { type: String, required: true },
       city: { type: String, default: "Bangalore" },
       pincode: { type: String, required: true },
     },
@@ -70,26 +61,39 @@ const restaurantSchema = new mongoose.Schema(
       min: 0,
       max: 5,
     },
-    images: [
-      {
-        type: String, // image URLs
-      },
-    ],
+    images: [{ type: String }],
+
+    // ✅ Owner reference — NOT admin!
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    // ✅ Commission rate snapshot at restaurant level
+    // Owner can negotiate different rates per restaurant
+    commissionRate: {
+      type: Number,
+      default: 10,
+    },
+
     isActive: {
       type: Boolean,
-      default: true, // soft delete — never hard delete restaurants!
+      default: true,
     },
-    managedBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // staff/admin user
+
+    // ✅ Admin approval required before listing
+    isApproved: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
 );
 
-// Index for faster search by cuisine and area
 restaurantSchema.index({ cuisine: 1 });
 restaurantSchema.index({ "address.area": 1 });
-restaurantSchema.index({ isActive: 1 });
+restaurantSchema.index({ isActive: 1, isApproved: 1 });
+restaurantSchema.index({ owner: 1 }); // ✅ Fast lookup by owner
 
 export const Restaurant = mongoose.model("Restaurant", restaurantSchema);

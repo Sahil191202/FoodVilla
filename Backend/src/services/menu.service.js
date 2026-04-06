@@ -1,16 +1,44 @@
 import { Menu } from "../models/Menu.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { getRestaurantById } from "./restaurant.service.js";
+import cloudinary from "../config/cloudinary.js";
 
-// Create menu for a restaurant
+// Upload image to cloudinary
+const uploadMenuImage = async (fileBuffer, mimetype) => {
+  const base64 = `data:${mimetype};base64,${fileBuffer.toString("base64")}`;
+  const result = await cloudinary.uploader.upload(base64, {
+    folder: "goodfoods/menu",
+    transformation: [
+      { width: 600, height: 400, crop: "fill" },
+      { quality: "auto" },
+      { format: "webp" }, // Convert to webp — smaller size!
+    ],
+  });
+  return {
+    url: result.secure_url,
+    publicId: result.public_id,
+  };
+};
+
+// Delete image from cloudinary
+const deleteMenuImage = async (publicId) => {
+  if (!publicId) return;
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    console.error("Failed to delete image from cloudinary:", error.message);
+  }
+};
+
 export const createMenu = async (restaurantId, items) => {
-  // Check restaurant exists first
   await getRestaurantById(restaurantId);
 
-  // Check if menu already exists for this restaurant
   const existingMenu = await Menu.findOne({ restaurant: restaurantId });
   if (existingMenu) {
-    throw new ApiError(409, "Menu already exists for this restaurant. Use update instead.");
+    throw new ApiError(
+      409,
+      "Menu already exists. Use update to add items."
+    );
   }
 
   const menu = await Menu.create({
@@ -21,9 +49,7 @@ export const createMenu = async (restaurantId, items) => {
   return menu;
 };
 
-// Get full menu of a restaurant
 export const getMenuByRestaurant = async (restaurantId) => {
-  // Check restaurant exists
   await getRestaurantById(restaurantId);
 
   const menu = await Menu.findOne({
@@ -38,13 +64,9 @@ export const getMenuByRestaurant = async (restaurantId) => {
   return menu;
 };
 
-// Get menu grouped by category
-// Makes it easier for frontend to render
-// { "Starters": [...], "Main Course": [...], "Desserts": [...] }
 export const getMenuGroupedByCategory = async (restaurantId) => {
   const menu = await getMenuByRestaurant(restaurantId);
 
-  // Filter only available items then group
   const availableItems = menu.items.filter((item) => item.isAvailable);
 
   const grouped = availableItems.reduce((acc, item) => {
@@ -58,12 +80,11 @@ export const getMenuGroupedByCategory = async (restaurantId) => {
   return grouped;
 };
 
-// Add new items to existing menu
 export const addMenuItems = async (restaurantId, newItems) => {
   const menu = await Menu.findOne({ restaurant: restaurantId });
 
   if (!menu) {
-    throw new ApiError(404, "Menu not found. Create a menu first.");
+    throw new ApiError(404, "Menu not found. Create menu first.");
   }
 
   menu.items.push(...newItems);
@@ -72,7 +93,67 @@ export const addMenuItems = async (restaurantId, newItems) => {
   return menu;
 };
 
-// Update a specific menu item by its _id
+// ✅ Upload image for a specific menu item
+export const uploadMenuItemImage = async (
+  restaurantId,
+  itemId,
+  fileBuffer,
+  mimetype
+) => {
+  const menu = await Menu.findOne({ restaurant: restaurantId }).select(
+    "+items.imagePublicId"
+  );
+
+  if (!menu) {
+    throw new ApiError(404, "Menu not found");
+  }
+
+  const item = menu.items.id(itemId);
+  if (!item) {
+    throw new ApiError(404, "Menu item not found");
+  }
+
+  // Delete old image if exists
+  if (item.imagePublicId) {
+    await deleteMenuImage(item.imagePublicId);
+  }
+
+  // Upload new image
+  const { url, publicId } = await uploadMenuImage(fileBuffer, mimetype);
+
+  item.image = url;
+  item.imagePublicId = publicId;
+  await menu.save();
+
+  return item;
+};
+
+// ✅ Delete image for a specific menu item
+export const deleteMenuItemImage = async (restaurantId, itemId) => {
+  const menu = await Menu.findOne({ restaurant: restaurantId }).select(
+    "+items.imagePublicId"
+  );
+
+  if (!menu) {
+    throw new ApiError(404, "Menu not found");
+  }
+
+  const item = menu.items.id(itemId);
+  if (!item) {
+    throw new ApiError(404, "Menu item not found");
+  }
+
+  if (item.imagePublicId) {
+    await deleteMenuImage(item.imagePublicId);
+  }
+
+  item.image = null;
+  item.imagePublicId = null;
+  await menu.save();
+
+  return item;
+};
+
 export const updateMenuItem = async (restaurantId, itemId, updates) => {
   const menu = await Menu.findOne({ restaurant: restaurantId });
 
@@ -80,22 +161,19 @@ export const updateMenuItem = async (restaurantId, itemId, updates) => {
     throw new ApiError(404, "Menu not found");
   }
 
-  // Find the item inside items array
   const item = menu.items.id(itemId);
-
   if (!item) {
     throw new ApiError(404, "Menu item not found");
   }
 
-  // Update only provided fields
-  Object.assign(item, updates);
+  // Dont allow image update through this — use uploadMenuItemImage
+  const { image, imagePublicId, ...safeUpdates } = updates;
+  Object.assign(item, safeUpdates);
   await menu.save();
 
   return menu;
 };
 
-// Toggle item availability
-// Like if something runs out — mark as unavailable
 export const toggleItemAvailability = async (restaurantId, itemId) => {
   const menu = await Menu.findOne({ restaurant: restaurantId });
 
@@ -104,7 +182,6 @@ export const toggleItemAvailability = async (restaurantId, itemId) => {
   }
 
   const item = menu.items.id(itemId);
-
   if (!item) {
     throw new ApiError(404, "Menu item not found");
   }
@@ -115,26 +192,29 @@ export const toggleItemAvailability = async (restaurantId, itemId) => {
   return item;
 };
 
-// Delete a menu item
 export const deleteMenuItem = async (restaurantId, itemId) => {
-  const menu = await Menu.findOne({ restaurant: restaurantId });
+  const menu = await Menu.findOne({ restaurant: restaurantId }).select(
+    "+items.imagePublicId"
+  );
 
   if (!menu) {
     throw new ApiError(404, "Menu not found");
   }
 
   const item = menu.items.id(itemId);
-
   if (!item) {
     throw new ApiError(404, "Menu item not found");
+  }
+
+  // Delete image from cloudinary before removing item
+  if (item.imagePublicId) {
+    await deleteMenuImage(item.imagePublicId);
   }
 
   item.deleteOne();
   await menu.save();
 };
 
-// Search menu items by name or category
-// Used by AI for upsell suggestions!
 export const searchMenuItems = async (restaurantId, query) => {
   const menu = await Menu.findOne({
     restaurant: restaurantId,
@@ -147,18 +227,16 @@ export const searchMenuItems = async (restaurantId, query) => {
 
   const lowerQuery = query.toLowerCase();
 
-  const results = menu.items.filter(
+  return menu.items.filter(
     (item) =>
       item.isAvailable &&
       (item.name.toLowerCase().includes(lowerQuery) ||
         item.category.toLowerCase().includes(lowerQuery) ||
-        item.description?.toLowerCase().includes(lowerQuery))
+        item.description?.toLowerCase().includes(lowerQuery) ||
+        item.tags?.some((t) => t.toLowerCase().includes(lowerQuery)))
   );
-
-  return results;
 };
 
-// Get veg only items — useful for AI filtering
 export const getVegItems = async (restaurantId) => {
   const menu = await Menu.findOne({
     restaurant: restaurantId,
@@ -170,4 +248,19 @@ export const getVegItems = async (restaurantId) => {
   }
 
   return menu.items.filter((item) => item.isVeg && item.isAvailable);
+};
+
+// ✅ Get bestseller items — for AI upsell
+export const getBestsellerItems = async (restaurantId) => {
+  const menu = await Menu.findOne({
+    restaurant: restaurantId,
+    isActive: true,
+  });
+
+  if (!menu) return [];
+
+  return menu.items.filter(
+    (item) =>
+      item.isAvailable && item.tags?.includes("bestseller")
+  );
 };

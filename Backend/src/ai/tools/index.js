@@ -1,13 +1,11 @@
-// Export all tool definitions — sent to OpenAI
 import { searchRestaurantsTool } from "./searchRestaurants.tool.js";
 import { checkAvailabilityTool } from "./checkAvailability.tool.js";
 import { makeReservationTool } from "./makeReservation.tool.js";
 import { cancelReservationTool } from "./cancelReservation.tool.js";
 import { getMenuTool } from "./getMenu.tool.js";
 import { getUserReservationsTool } from "./getUserReservations.tool.js";
+import { upsellMenuTool } from "./upsellMenu.tool.js"; // ✅ New!
 
-// This array goes directly to OpenAI — it reads these definitions
-// and decides which tool to call!
 export const allTools = [
   searchRestaurantsTool,
   checkAvailabilityTool,
@@ -15,4 +13,5 @@ export const allTools = [
   cancelReservationTool,
   getMenuTool,
   getUserReservationsTool,
+  upsellMenuTool, // ✅ New!
 ];

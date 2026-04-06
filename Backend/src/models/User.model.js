@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password is required"],
       minlength: [8, "Password must be at least 8 characters"],
-      select: false, // Never return password in queries by default!
+      select: false,
     },
     phone: {
       type: String,
@@ -36,6 +36,31 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    // ✅ Owner specific fields
+    businessName: {
+      type: String,
+      trim: true,
+    },
+    businessPhone: {
+      type: String,
+      trim: true,
+    },
+    commissionRate: {
+      type: Number,
+      default: 10, // 10% default commission
+      min: 0,
+      max: 100,
+    },
+    totalCommissionPaid: {
+      type: Number,
+      default: 0, // Track lifetime commission paid by owner
+    },
+    isApproved: {
+      type: Boolean,
+      default: false, // Admin must approve owner before they can list restaurants
+    },
+
     refreshToken: {
       type: String,
       select: false,
@@ -44,13 +69,11 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Hash password before saving — runs every time password changes
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 12);
 });
 
-// Method to compare password on login
 userSchema.methods.isPasswordCorrect = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };

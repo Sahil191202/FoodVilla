@@ -13,6 +13,7 @@ import menuRoutes from "./routes/menu.routes.js";
 import reservationRoutes from "./routes/reservation.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import ownerRoutes from "./routes/owner.routes.js";
 
 
 const app = express();
@@ -46,6 +47,7 @@ app.use("/api/v1/restaurants", restaurantRoutes);
 app.use("/api/v1/restaurants", menuRoutes);   // /restaurants/:id/menu
 app.use("/api/v1/reservations", reservationRoutes);
 app.use("/api/v1/chat", chatRoutes);
+app.use("/api/v1/owner", ownerRoutes);
 app.use("/api/v1/admin", adminRoutes);
 
 // 404 handler — route not found
