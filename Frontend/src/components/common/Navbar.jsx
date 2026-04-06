@@ -42,18 +42,17 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-sm">
+    <nav className="sticky top-0 z-40 glass border-b border-orange-100/60 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link
-            to="/"
-            className="flex items-center gap-2 font-bold text-xl text-primary-500"
-          >
-            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-linear-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-md shadow-primary-200">
               <UtensilsCrossed size={18} className="text-white" />
             </div>
-            GoodFoods
+            <span className="font-display font-bold text-xl text-gray-900">
+              Good<span className="text-primary-500">Foods</span>
+            </span>
           </Link>
 
           {/* Desktop Nav Links */}
@@ -66,8 +65,8 @@ const Navbar = () => {
                   className={cn(
                     "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
                     isActive(link.href)
-                      ? "bg-primary-50 text-primary-600"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+                      ? "bg-primary-50 text-primary-600 font-semibold"
+                      : "text-gray-600 hover:bg-orange-50 hover:text-primary-600",
                   )}
                 >
                   {link.label}

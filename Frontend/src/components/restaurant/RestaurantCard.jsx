@@ -22,21 +22,20 @@ const RestaurantCard = ({ restaurant }) => {
   } = restaurant;
 
   return (
-    <Card
-      hover
-      padding="none"
-      className="overflow-hidden group"
-    >
+    <Card hover padding="none" className="overflow-hidden group">
       {/* Image */}
       <div className="relative h-48 overflow-hidden bg-gray-100">
         {images?.length > 0 ? (
-          <img
-            src={images[0]}
-            alt={name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+          <>
+            <img
+              src={images[0]}
+              alt={name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100">
+          <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary-50 to-primary-100">
             <span className="text-5xl">🍽️</span>
           </div>
         )}
@@ -44,7 +43,10 @@ const RestaurantCard = ({ restaurant }) => {
         {/* Cuisine Badges on image */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1">
           {cuisine?.slice(0, 2).map((c) => (
-            <Badge key={c} variant="default" size="sm"
+            <Badge
+              key={c}
+              variant="default"
+              size="sm"
               className="bg-white/90 backdrop-blur-sm text-gray-700 shadow-sm"
             >
               {c}
@@ -64,8 +66,8 @@ const RestaurantCard = ({ restaurant }) => {
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 text-base mb-1 line-clamp-1">
+      <div className="p-5">
+        <h3 className="font-display font-semibold text-gray-900 text-lg mb-1 line-clamp-1">
           {name}
         </h3>
 
@@ -88,22 +90,23 @@ const RestaurantCard = ({ restaurant }) => {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 pt-1">
           <Button
             variant="outline"
             size="sm"
             fullWidth
             onClick={() => navigate(`/restaurants/${_id}`)}
           >
-            View Details
+            View
           </Button>
           <Button
             variant="primary"
             size="sm"
             fullWidth
             onClick={() => navigate(`/restaurants/${_id}/book`)}
+            className="bg-linear-to-r from-primary-500 to-primary-600 shadow-md shadow-primary-200 border-0"
           >
-            Book Now
+            Book Now →
           </Button>
         </div>
       </div>

@@ -46,7 +46,7 @@ const AdminLayout = () => {
   const Sidebar = ({ mobile = false }) => (
     <aside
       className={cn(
-        "flex flex-col bg-gray-900 text-white",
+        "flex flex-col bg-stone-950 text-white border-r border-orange-900/20",
         mobile
           ? "fixed inset-y-0 left-0 z-50 w-72 shadow-2xl"
           : "hidden lg:flex w-64 min-h-screen sticky top-0"
@@ -59,7 +59,7 @@ const AdminLayout = () => {
             <UtensilsCrossed size={18} className="text-white" />
           </div>
           <div>
-            <p className="font-bold text-white text-sm">GoodFoods</p>
+            <p className="font-display font-bold text-white text-sm">GoodFoods</p>
             <p className="text-xs text-gray-400">Admin Panel</p>
           </div>
         </div>

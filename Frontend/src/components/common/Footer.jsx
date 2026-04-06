@@ -28,20 +28,18 @@ const SOCIAL_LINKS = [
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-gray-400 mt-auto">
+    <footer className="bg-stone-950 text-gray-400 mt-auto border-t border-orange-900/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
-            <Link
-              to="/"
-              className="flex items-center gap-2 text-white font-bold text-xl mb-3"
-            >
-              <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+            <Link to="/" className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 bg-linear-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
                 <UtensilsCrossed size={18} className="text-white" />
               </div>
-              GoodFoods
+              <span className="font-display font-bold text-xl text-white">
+                Good<span className="text-primary-400">Foods</span>
+              </span>
             </Link>
             <p className="text-sm leading-relaxed max-w-xs">
               Discover the best restaurants in your city and book tables
@@ -87,9 +85,7 @@ const Footer = () => {
 
           {/* Support */}
           <div>
-            <h4 className="text-white font-semibold mb-4 text-sm">
-              Support
-            </h4>
+            <h4 className="text-white font-semibold mb-4 text-sm">Support</h4>
             <ul className="space-y-2.5">
               {[
                 "Help Center",

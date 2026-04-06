@@ -2,7 +2,8 @@ import { cn } from "../../utils/cn.js";
 import Spinner from "./Spinner.jsx";
 
 const variants = {
-  primary: "bg-primary-500 hover:bg-primary-600 text-white shadow-sm",
+  primary:
+    "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-sm shadow-primary-200/60",
   secondary: "bg-gray-100 hover:bg-gray-200 text-gray-800",
   outline: "border border-gray-300 hover:bg-gray-50 text-gray-700 bg-white",
   danger: "bg-red-500 hover:bg-red-600 text-white",
@@ -44,7 +45,7 @@ const Button = ({
         sizes[size],
         // Full width
         fullWidth && "w-full",
-        className
+        className,
       )}
       {...props}
     >

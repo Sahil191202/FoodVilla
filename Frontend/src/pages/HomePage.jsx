@@ -1,8 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Search, Star, Clock, Shield,
-  MessageSquare, ChevronRight, MapPin,
+  Search,
+  Star,
+  Clock,
+  Shield,
+  MessageSquare,
+  ChevronRight,
+  MapPin,
   TrendingUp,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
@@ -14,9 +19,14 @@ import Button from "../components/ui/Button.jsx";
 import { CUISINE_TYPES } from "../utils/constants.js";
 
 const CUISINE_EMOJIS = {
-  Indian: "🍛", Italian: "🍕", Chinese: "🥡",
-  Continental: "🥩", Mexican: "🌮", Japanese: "🍱",
-  Thai: "🍜", Mediterranean: "🥙",
+  Indian: "🍛",
+  Italian: "🍕",
+  Chinese: "🥡",
+  Continental: "🥩",
+  Mexican: "🌮",
+  Japanese: "🍱",
+  Thai: "🍜",
+  Mediterranean: "🥙",
 };
 
 const FEATURES = [
@@ -72,7 +82,7 @@ const HomePage = () => {
   return (
     <div className="overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center bg-gradient-to-br from-gray-900 via-gray-800 to-primary-900 overflow-hidden">
+      <section className="relative min-h-[85vh] flex items-center bg-linear-to-br from-stone-950 via-gray-900 to-orange-950 overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0">
           {/* Gradient Orbs */}
@@ -94,32 +104,30 @@ const HomePage = () => {
           />
 
           {/* Floating Food Emojis */}
-          {["🍕", "🍜", "🍣", "🥗", "🍔", "🍱", "🌮", "🥙"].map(
-            (emoji, i) => (
-              <motion.div
-                key={i}
-                animate={{
-                  y: [0, -30, 0],
-                  x: [0, Math.sin(i) * 15, 0],
-                  rotate: [0, 10, -10, 0],
-                }}
-                transition={{
-                  duration: 4 + i * 0.5,
-                  repeat: Infinity,
-                  delay: i * 0.3,
-                }}
-                style={{
-                  position: "absolute",
-                  left: `${10 + i * 12}%`,
-                  top: `${15 + Math.sin(i * 2) * 30}%`,
-                  fontSize: "2rem",
-                  opacity: 0.15,
-                }}
-              >
-                {emoji}
-              </motion.div>
-            )
-          )}
+          {["🍕", "🍜", "🍣", "🥗", "🍔", "🍱", "🌮", "🥙"].map((emoji, i) => (
+            <motion.div
+              key={i}
+              animate={{
+                y: [0, -30, 0],
+                x: [0, Math.sin(i) * 15, 0],
+                rotate: [0, 10, -10, 0],
+              }}
+              transition={{
+                duration: 4 + i * 0.5,
+                repeat: Infinity,
+                delay: i * 0.3,
+              }}
+              style={{
+                position: "absolute",
+                left: `${10 + i * 12}%`,
+                top: `${15 + Math.sin(i * 2) * 30}%`,
+                fontSize: "2rem",
+                opacity: 0.15,
+              }}
+            >
+              {emoji}
+            </motion.div>
+          ))}
         </div>
 
         {/* Hero Content */}
@@ -132,7 +140,7 @@ const HomePage = () => {
           >
             {/* Tag */}
             <motion.div variants={itemVariants}>
-              <span className="inline-flex items-center gap-2 bg-primary-500/20 backdrop-blur-sm border border-primary-500/30 text-primary-300 text-sm font-medium px-4 py-2 rounded-full mb-6">
+              <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-orange-200 text-sm font-medium px-4 py-1.5 rounded-full mb-6 shadow-lg">
                 <TrendingUp size={14} />
                 AI-Powered Restaurant Discovery
               </span>
@@ -141,10 +149,10 @@ const HomePage = () => {
             {/* Heading */}
             <motion.h1
               variants={itemVariants}
-              className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight"
+              className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.1]"
             >
               Find Your Next{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-primary-300">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-300 via-amber-200 to-yellow-200 italic">
                 Favorite Meal
               </span>
             </motion.h1>
@@ -176,7 +184,7 @@ const HomePage = () => {
                 variant="outline"
                 onClick={() => dispatch(openChat())}
                 leftIcon={<MessageSquare size={20} />}
-                className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm"
+                className="border-white/30 bg-white/10 text-white hover:bg-white/10 backdrop-blur-sm"
               >
                 Chat with AI
               </Button>
@@ -203,7 +211,11 @@ const HomePage = () => {
 
         {/* Bottom Wave */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            viewBox="0 0 1440 80"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
               d="M0 80L1440 80L1440 20C1440 20 1080 80 720 80C360 80 0 20 0 20L0 80Z"
               fill="#F9FAFB"
@@ -221,8 +233,9 @@ const HomePage = () => {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">
-              What Are You Craving? 🤤
+            <h2 className="font-display text-4xl font-bold text-gray-900 mb-3">
+              What Are You{" "}
+              <span className="text-gradient italic">Craving?</span>
             </h2>
             <p className="text-gray-500">
               Explore restaurants by your favorite cuisine
@@ -243,7 +256,7 @@ const HomePage = () => {
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => handleCuisineClick(cuisine)}
-                className="flex flex-col items-center gap-2 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-primary-200 transition-all duration-200 group"
+                className="flex flex-col items-center gap-2 bg-white p-4 rounded-2xl border border-orange-100 shadow-sm hover:shadow-lg hover:shadow-orange-100 hover:border-primary-300 hover:-translate-y-1 transition-all duration-300 group"
               >
                 <span className="text-3xl group-hover:scale-110 transition-transform duration-200">
                   {CUISINE_EMOJIS[cuisine]}
@@ -266,12 +279,14 @@ const HomePage = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">
-              Why Choose GoodFoods?
+            <h2 className="font-display text-4xl font-bold text-gray-900 mb-3">
+              Why Choose{" "}
+              <span className="text-primary-500 italic">GoodFoods?</span>
             </h2>
+
             <p className="text-gray-500 max-w-xl mx-auto">
-              We make restaurant discovery and booking effortless with the
-              power of AI
+              We make restaurant discovery and booking effortless with the power
+              of AI
             </p>
           </motion.div>
 
@@ -305,7 +320,7 @@ const HomePage = () => {
       </section>
 
       {/* AI CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-primary-500 to-primary-700 relative overflow-hidden">
+      <section className="py-20 bg-linear-to-br from-stone-950 via-orange-950 to-gray-900 relative overflow-hidden">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
@@ -330,8 +345,8 @@ const HomePage = () => {
               Let AI Do The Work! 🤖
             </h2>
             <p className="text-white/80 mb-8 max-w-lg mx-auto text-lg">
-              Just tell our AI what you want — cuisine, area, time — and it
-              will find and book the perfect table for you!
+              Just tell our AI what you want — cuisine, area, time — and it will
+              find and book the perfect table for you!
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
               <Button

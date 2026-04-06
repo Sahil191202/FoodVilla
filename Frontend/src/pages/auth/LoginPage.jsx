@@ -4,7 +4,14 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Mail, Lock, Eye, EyeOff, UtensilsCrossed, ArrowRight } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  UtensilsCrossed,
+  ArrowRight,
+} from "lucide-react";
 import { useAuth } from "../../hooks/useAuth.js";
 import Input from "../../components/ui/Input.jsx";
 import Button from "../../components/ui/Button.jsx";
@@ -35,7 +42,7 @@ const LoginPage = () => {
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
-        className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-500 to-primary-700 relative overflow-hidden"
+        className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-orange-600 via-primary-600 to-rose-700 relative overflow-hidden"
       >
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
@@ -77,9 +84,10 @@ const LoginPage = () => {
               <span className="text-2xl font-bold">GoodFoods</span>
             </div>
 
-            <h1 className="text-4xl font-bold mb-4 leading-tight">
+            <h1 className="font-display text-4xl font-bold mb-4 leading-[1.2] italic">
               Discover & Book <br />
-              Amazing Restaurants
+              <span className="not-italic font-extrabold">Amazing</span>{" "}
+              Restaurants
             </h1>
             <p className="text-white/80 text-lg mb-8">
               Your AI-powered dining companion for the best food experiences.
@@ -118,7 +126,9 @@ const LoginPage = () => {
             <div className="w-9 h-9 bg-primary-500 rounded-xl flex items-center justify-center">
               <UtensilsCrossed size={20} className="text-white" />
             </div>
-            <span className="text-xl font-bold text-primary-500">GoodFoods</span>
+            <span className="text-xl font-bold text-primary-500">
+              GoodFoods
+            </span>
           </div>
 
           <motion.div
@@ -126,9 +136,7 @@ const LoginPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-1">
-              Welcome back! 👋
-            </h2>
+            <h2 className="font-display text-3xl font-bold text-gray-900 mb-1">Welcome back! 👋</h2>
             <p className="text-gray-500 mb-8">
               Sign in to continue your food journey
             </p>

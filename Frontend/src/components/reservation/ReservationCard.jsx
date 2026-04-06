@@ -48,7 +48,7 @@ const ReservationCard = ({ reservation }) => {
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h3 className="font-semibold text-gray-900 text-base">
+            <h3 className="font-display font-semibold text-gray-900 text-lg">
               {restaurant?.name}
             </h3>
             <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">

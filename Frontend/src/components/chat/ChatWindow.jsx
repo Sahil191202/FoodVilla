@@ -1,11 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  X,
-  MessageSquare,
-  Trash2,
-  Minimize2,
-} from "lucide-react";
+import { X, MessageSquare, Trash2, Minimize2 } from "lucide-react";
 import {
   selectIsChatOpen,
   closeChat,
@@ -62,12 +57,12 @@ const ChatWindow = () => {
         onClick={() => dispatch(toggleChat())}
         className={cn(
           "fixed bottom-6 right-6 z-50",
-          "w-14 h-14 rounded-full shadow-lg",
+          "w-14 h-14 rounded-2xl shadow-xl",
           "flex items-center justify-center",
           "transition-all duration-300",
           isOpen
-            ? "bg-gray-700 hover:bg-gray-800"
-            : "bg-primary-500 hover:bg-primary-600"
+            ? "bg-gray-800 hover:bg-gray-900 shadow-gray-400/30"
+            : "bg-linear-to-br from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-primary-300/50",
         )}
       >
         {isOpen ? (
@@ -89,7 +84,7 @@ const ChatWindow = () => {
           className={cn(
             "fixed bottom-24 right-6 z-50",
             "w-96 max-w-[calc(100vw-48px)]",
-            "bg-gray-50 rounded-2xl shadow-2xl border border-gray-200",
+            "bg-surface rounded-2xl shadow-2xl shadow-orange-100/50 border border-orange-100",
             "flex flex-col overflow-hidden",
             "animate-slide-up",
           )}
@@ -102,7 +97,7 @@ const ChatWindow = () => {
                 <span className="text-base">🍽️</span>
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="font-display font-semibold text-gray-900">
                   GoodFoods AI
                 </p>
                 <div className="flex items-center gap-1.5">
@@ -165,10 +160,7 @@ const ChatWindow = () => {
           </div>
 
           {/* Input */}
-          <ChatInput
-            onSend={sendMessage}
-            isLoading={isSending || isTyping}
-          />
+          <ChatInput onSend={sendMessage} isLoading={isSending || isTyping} />
         </div>
       )}
     </>
