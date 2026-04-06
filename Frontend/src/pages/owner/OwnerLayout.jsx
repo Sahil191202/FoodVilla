@@ -2,7 +2,6 @@ import { NavLink, Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard,
-  Users,
   UtensilsCrossed,
   CalendarDays,
   IndianRupee,
@@ -10,7 +9,6 @@ import {
   X,
   ChevronRight,
   LogOut,
-  ShieldCheck,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth.js";
@@ -20,60 +18,55 @@ import { cn } from "../../utils/cn.js";
 const NAV_ITEMS = [
   {
     label: "Overview",
-    href: "/admin",
+    href: "/owner",
     icon: LayoutDashboard,
     end: true,
   },
   {
-    label: "Owners",
-    href: "/admin/owners",
-    icon: Users,
-  },
-  {
-    label: "Restaurants",
-    href: "/admin/restaurants",
+    label: "My Restaurants",
+    href: "/owner/restaurants",
     icon: UtensilsCrossed,
   },
   {
     label: "Reservations",
-    href: "/admin/reservations",
+    href: "/owner/reservations",
     icon: CalendarDays,
   },
   {
     label: "Commission",
-    href: "/admin/commission",
+    href: "/owner/commission",
     icon: IndianRupee,
   },
 ];
 
-const AdminLayout = () => {
+const OwnerLayout = () => {
   const { user, logout } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const Sidebar = ({ mobile = false }) => (
     <aside
       className={cn(
-        "flex flex-col bg-gray-900 text-white",
+        "flex flex-col bg-white border-r border-gray-100",
         mobile
           ? "fixed inset-y-0 left-0 z-50 w-72 shadow-2xl"
           : "hidden lg:flex w-64 min-h-screen sticky top-0"
       )}
     >
       {/* Logo */}
-      <div className="flex items-center justify-between px-6 py-5 border-b border-gray-800">
+      <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-            <ShieldCheck size={18} className="text-white" />
+            <UtensilsCrossed size={18} className="text-white" />
           </div>
           <div>
-            <p className="font-bold text-white text-sm">GoodFoods</p>
-            <p className="text-xs text-gray-400">Admin Panel</p>
+            <p className="font-bold text-gray-900 text-sm">GoodFoods</p>
+            <p className="text-xs text-gray-400">Owner Panel</p>
           </div>
         </div>
         {mobile && (
           <button
             onClick={() => setIsSidebarOpen(false)}
-            className="p-1 rounded-lg hover:bg-gray-800"
+            className="p-1 rounded-lg hover:bg-gray-100"
           >
             <X size={18} />
           </button>
@@ -92,8 +85,8 @@ const AdminLayout = () => {
               cn(
                 "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                 isActive
-                  ? "bg-primary-500 text-white"
-                  : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                  ? "bg-primary-50 text-primary-600"
+                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
               )
             }
           >
@@ -101,7 +94,9 @@ const AdminLayout = () => {
               <>
                 <item.icon size={18} />
                 <span className="flex-1">{item.label}</span>
-                {isActive && <ChevronRight size={14} />}
+                {isActive && (
+                  <ChevronRight size={14} className="text-primary-400" />
+                )}
               </>
             )}
           </NavLink>
@@ -109,21 +104,21 @@ const AdminLayout = () => {
       </nav>
 
       {/* User */}
-      <div className="px-3 py-4 border-t border-gray-800">
+      <div className="px-3 py-4 border-t border-gray-100">
         <div className="flex items-center gap-3 px-3 py-2 mb-2">
           <Avatar name={user?.name} size="sm" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white truncate">
+            <p className="text-sm font-medium text-gray-900 truncate">
               {user?.name}
             </p>
-            <p className="text-xs text-gray-400 capitalize">
-              {user?.role}
+            <p className="text-xs text-gray-400">
+              {user?.businessName || "Restaurant Owner"}
             </p>
           </div>
         </div>
         <button
           onClick={logout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-red-500 hover:bg-red-50 transition-colors"
         >
           <LogOut size={16} />
           Logout
@@ -134,8 +129,10 @@ const AdminLayout = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
+      {/* Desktop Sidebar */}
       <Sidebar />
 
+      {/* Mobile Sidebar */}
       {isSidebarOpen && (
         <>
           <div
@@ -146,7 +143,9 @@ const AdminLayout = () => {
         </>
       )}
 
+      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
+        {/* Top Bar */}
         <header className="bg-white border-b border-gray-100 px-6 py-4 flex items-center gap-4 sticky top-0 z-30">
           <button
             onClick={() => setIsSidebarOpen(true)}
@@ -158,6 +157,7 @@ const AdminLayout = () => {
           <Avatar name={user?.name} size="sm" />
         </header>
 
+        {/* Content */}
         <main className="flex-1 p-6">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -172,4 +172,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default OwnerLayout;

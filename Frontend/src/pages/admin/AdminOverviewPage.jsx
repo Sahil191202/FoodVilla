@@ -1,20 +1,16 @@
 import { motion } from "framer-motion";
 import {
-  UtensilsCrossed,
-  CalendarDays,
-  Users,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  XCircle,
+  Users, UtensilsCrossed, CalendarDays,
+  IndianRupee, TrendingUp, Clock,
+  CheckCircle, AlertCircle,
 } from "lucide-react";
-import { useAdminRestaurants, useAdminReservations } from "../../hooks/useAdmin.js";
+import { useAdminStats, useAdminReservations } from "../../hooks/useAdmin.js";
 import Spinner from "../../components/ui/Spinner.jsx";
-import { RESERVATION_STATUS } from "../../utils/constants.js";
-import { formatDate, formatTime } from "../../utils/formatters.js";
 import Badge from "../../components/ui/Badge.jsx";
+import { formatDate, formatTime, formatPrice } from "../../utils/formatters.js";
+import { cn } from "../../utils/cn.js";
 
-const StatCard = ({ icon, label, value, color, delay }) => (
+const StatCard = ({ icon, label, value, sub, color, delay }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -22,30 +18,25 @@ const StatCard = ({ icon, label, value, color, delay }) => (
     className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
   >
     <div className="flex items-center justify-between mb-4">
-      <div
-        className={cn(
-          "w-12 h-12 rounded-xl flex items-center justify-center",
-          color
-        )}
-      >
+      <div className={cn(
+        "w-12 h-12 rounded-xl flex items-center justify-center",
+        color
+      )}>
         {icon}
       </div>
       <TrendingUp size={16} className="text-green-500" />
     </div>
     <p className="text-3xl font-bold text-gray-900 mb-1">{value}</p>
     <p className="text-sm text-gray-500">{label}</p>
+    {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
   </motion.div>
 );
 
-import { cn } from "../../utils/cn.js";
-
 const AdminOverviewPage = () => {
-  const { data: restaurants, isLoading: restaurantsLoading } =
-    useAdminRestaurants();
-  const { data: reservations, isLoading: reservationsLoading } =
-    useAdminReservations();
+  const { data: stats, isLoading: statsLoading } = useAdminStats();
+  const { data: reservations, isLoading: resLoading } = useAdminReservations();
 
-  const isLoading = restaurantsLoading || reservationsLoading;
+  const isLoading = statsLoading || resLoading;
 
   if (isLoading) {
     return (
@@ -55,63 +46,55 @@ const AdminOverviewPage = () => {
     );
   }
 
-  const confirmed = reservations?.filter(
-    (r) => r.status === RESERVATION_STATUS.CONFIRMED
-  ).length;
-  const cancelled = reservations?.filter(
-    (r) => r.status === RESERVATION_STATUS.CANCELLED
-  ).length;
-  const completed = reservations?.filter(
-    (r) => r.status === RESERVATION_STATUS.COMPLETED
-  ).length;
-
-  // Recent 5 reservations
-  const recent = reservations?.slice(0, 5);
+  const recent = reservations?.slice(0, 6);
 
   const STATS = [
     {
-      icon: <UtensilsCrossed size={22} className="text-primary-500" />,
-      label: "Total Restaurants",
-      value: restaurants?.length || 0,
-      color: "bg-primary-50",
+      icon: <Users size={22} className="text-blue-500" />,
+      label: "Total Users",
+      value: stats?.totalUsers || 0,
+      sub: `${stats?.totalOwners || 0} restaurant owners`,
+      color: "bg-blue-50",
       delay: 0,
     },
     {
-      icon: <CalendarDays size={22} className="text-blue-500" />,
-      label: "Total Reservations",
-      value: reservations?.length || 0,
-      color: "bg-blue-50",
+      icon: <UtensilsCrossed size={22} className="text-primary-500" />,
+      label: "Restaurants",
+      value: stats?.totalRestaurants || 0,
+      sub: `${stats?.approvedRestaurants || 0} live`,
+      color: "bg-primary-50",
       delay: 0.1,
     },
     {
-      icon: <CheckCircle size={22} className="text-green-500" />,
-      label: "Confirmed",
-      value: confirmed || 0,
-      color: "bg-green-50",
+      icon: <CalendarDays size={22} className="text-purple-500" />,
+      label: "Total Reservations",
+      value: stats?.totalReservations || 0,
+      sub: `${stats?.completedReservations || 0} completed`,
+      color: "bg-purple-50",
       delay: 0.2,
     },
     {
-      icon: <XCircle size={22} className="text-red-500" />,
-      label: "Cancelled",
-      value: cancelled || 0,
-      color: "bg-red-50",
+      icon: <IndianRupee size={22} className="text-green-500" />,
+      label: "Commission Earned",
+      value: formatPrice(stats?.totalCommissionEarned || 0),
+      sub: `${formatPrice(stats?.totalCommissionPending || 0)} pending`,
+      color: "bg-green-50",
       delay: 0.3,
     },
   ];
 
   return (
     <div>
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">
-          Dashboard Overview 👋
+          Admin Dashboard 🛡️
         </h1>
         <p className="text-gray-500 mt-1">
-          Welcome back! Here's what's happening today.
+          Platform overview and management
         </p>
       </div>
 
-      {/* Stats Grid */}
+      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         {STATS.map((stat) => (
           <StatCard key={stat.label} {...stat} />
@@ -125,14 +108,19 @@ const AdminOverviewPage = () => {
         transition={{ delay: 0.4 }}
         className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
       >
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="font-semibold text-gray-900">Recent Reservations</h2>
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <h2 className="font-semibold text-gray-900">
+            Recent Reservations
+          </h2>
+          <Badge variant="primary" size="sm">
+            Latest {recent?.length}
+          </Badge>
         </div>
 
         {!recent?.length ? (
           <div className="py-12 text-center text-gray-400">
-            <CalendarDays size={32} className="mx-auto mb-3 opacity-50" />
-            <p>No reservations yet</p>
+            <CalendarDays size={32} className="mx-auto mb-3 opacity-40" />
+            <p className="text-sm">No reservations yet</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -140,16 +128,12 @@ const AdminOverviewPage = () => {
               <thead className="bg-gray-50">
                 <tr>
                   {[
-                    "Code",
-                    "Guest",
-                    "Restaurant",
-                    "Date & Time",
-                    "Guests",
-                    "Status",
+                    "Code", "Guest", "Restaurant",
+                    "Owner", "Date & Time", "Status",
                   ].map((h) => (
                     <th
                       key={h}
-                      className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
                     >
                       {h}
                     </th>
@@ -162,34 +146,34 @@ const AdminOverviewPage = () => {
                     key={r._id}
                     className="hover:bg-gray-50 transition-colors"
                   >
-                    <td className="px-6 py-4 text-sm font-mono text-gray-700">
+                    <td className="px-5 py-4 text-sm font-mono font-medium text-gray-700">
                       {r.confirmationCode}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
+                    <td className="px-5 py-4 text-sm text-gray-700">
                       {r.user?.name}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
+                    <td className="px-5 py-4 text-sm text-gray-700">
                       {r.restaurant?.name}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      {formatDate(r.date)} • {formatTime(r.time)}
+                    <td className="px-5 py-4 text-sm text-gray-500">
+                      {r.restaurant?.owner?.name}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      {r.guests}
+                    <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
+                      {formatDate(r.date)}
+                      <br />
+                      <span className="text-xs text-gray-400">
+                        {formatTime(r.time)}
+                      </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-4">
                       <Badge
                         variant={
-                          r.status === "confirmed"
-                            ? "success"
-                            : r.status === "cancelled"
-                            ? "danger"
-                            : r.status === "completed"
-                            ? "info"
-                            : "warning"
+                          r.status === "confirmed" ? "success"
+                          : r.status === "cancelled" ? "danger"
+                          : r.status === "completed" ? "info"
+                          : "warning"
                         }
-                        dot
-                        size="sm"
+                        dot size="sm"
                       >
                         {r.status}
                       </Badge>

@@ -6,21 +6,49 @@ export const adminService = {
     return await api.get("/admin/stats");
   },
 
-  // Restaurants
+  // Owner Management
+  getAllOwners: async () => {
+    return await api.get("/admin/owners");
+  },
+
+  approveOwner: async (id, data) => {
+    return await api.patch(`/admin/owners/${id}/approval`, data);
+  },
+
+  updateOwnerCommission: async (id, commissionRate) => {
+    return await api.patch(`/admin/owners/${id}/commission`, {
+      commissionRate,
+    });
+  },
+
+  // Restaurant Management
   getAllRestaurants: async () => {
-    return await api.get("/restaurants");
+    return await api.get("/admin/restaurants");
   },
 
-  addRestaurant: async (data) => {
-    return await api.post("/restaurants", data);
+  approveRestaurant: async (id, isApproved) => {
+    return await api.patch(`/admin/restaurants/${id}/approval`, {
+      isApproved,
+    });
   },
 
-  // All reservations
+  updateRestaurantCommission: async (id, commissionRate) => {
+    return await api.patch(`/admin/restaurants/${id}/commission`, {
+      commissionRate,
+    });
+  },
+
+  // Reservations
   getAllReservations: async () => {
     return await api.get("/admin/reservations");
   },
 
   updateReservationStatus: async (id, status) => {
     return await api.patch(`/admin/reservations/${id}`, { status });
+  },
+
+  // Commission
+  getCommissions: async () => {
+    return await api.get("/admin/commissions");
   },
 };

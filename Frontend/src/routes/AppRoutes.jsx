@@ -6,6 +6,7 @@ import ProtectedRoute from "../components/common/ProtectedRoute.jsx";
 import PublicRoute from "../components/common/PublicRoute.jsx";
 import PageLoader from "../components/ui/PageLoader.jsx";
 import ErrorBoundary from "../components/common/ErrorBoundary.jsx";
+import OwnerRoute from "../components/common/OwnerRoute.jsx";
 
 // Lazy load pages — faster initial load!
 const HomePage = lazy(() => import("../pages/HomePage.jsx"));
@@ -28,12 +29,33 @@ const AdminLayout = lazy(() => import("../pages/admin/AdminLayout.jsx"));
 const AdminOverviewPage = lazy(
   () => import("../pages/admin/AdminOverviewPage.jsx"),
 );
+const AdminOwnersPage = lazy(
+  () => import("../pages/admin/AdminOwnersPage.jsx"),
+);
 const AdminRestaurantsPage = lazy(
   () => import("../pages/admin/AdminRestaurantsPage.jsx"),
 );
 const AdminMenusPage = lazy(() => import("../pages/admin/AdminMenusPage.jsx"));
 const AdminReservationsPage = lazy(
   () => import("../pages/admin/AdminReservationsPage.jsx"),
+);
+const AdminCommissionPage = lazy(
+  () => import("../pages/admin/AdminCommissionPage.jsx"),
+);
+
+// Lazy load owner pages
+const OwnerLayout = lazy(() => import("../pages/owner/OwnerLayout.jsx"));
+const OwnerOverviewPage = lazy(
+  () => import("../pages/owner/OwnerOverviewPage.jsx"),
+);
+const OwnerRestaurantsPage = lazy(
+  () => import("../pages/owner/OwnerRestaurantsPage.jsx"),
+);
+const OwnerReservationsPage = lazy(
+  () => import("../pages/owner/OwnerReservationsPage.jsx"),
+);
+const OwnerCommissionPage = lazy(
+  () => import("../pages/owner/OwnerCommissionPage.jsx"),
 );
 
 // Layout wrapper — Navbar + main content + Footer
@@ -140,9 +162,23 @@ const AppRoutes = () => {
               }
             >
               <Route index element={<AdminOverviewPage />} />
+              <Route path="owners" element={<AdminOwnersPage />} />
               <Route path="restaurants" element={<AdminRestaurantsPage />} />
-              <Route path="menus" element={<AdminMenusPage />} />
               <Route path="reservations" element={<AdminReservationsPage />} />
+              <Route path="commission" element={<AdminCommissionPage />} />
+            </Route>
+            <Route
+              path="/owner"
+              element={
+                <OwnerRoute>
+                  <OwnerLayout />
+                </OwnerRoute>
+              }
+            >
+              <Route index element={<OwnerOverviewPage />} />
+              <Route path="restaurants" element={<OwnerRestaurantsPage />} />
+              <Route path="reservations" element={<OwnerReservationsPage />} />
+              <Route path="commission" element={<OwnerCommissionPage />} />
             </Route>
 
             {/* 404 */}
