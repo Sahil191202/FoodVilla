@@ -9,11 +9,7 @@ import {
   sendReservationConfirmation,
   sendCancellationEmail,
 } from "./notification.service.js";
-import {
-  createCommission,
-  cancelCommission,
-  earnCommission,
-} from "./commission.service.js";
+
 
 // Generate unique confirmation code like GF-ABC123
 const generateConfirmationCode = () => {

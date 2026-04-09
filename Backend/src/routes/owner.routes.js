@@ -6,7 +6,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Restaurant } from "../models/Restaurant.model.js";
 import { Reservation } from "../models/Reservation.model.js";
-import { getOwnerCommissionSummary, earnCommission } from "../services/commission.service.js";
 import { USER_ROLES } from "../utils/constants.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { createRestaurantSchema } from "../validators/restaurant.validator.js";
