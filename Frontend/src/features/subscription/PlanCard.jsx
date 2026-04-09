@@ -73,7 +73,7 @@ const PlanCard = ({
       )}
 
       {/* Header */}
-      <div className={cn("p-6 bg-gradient-to-br", style.gradient)}>
+      <div className={cn("p-6 bg-linear-to-br", style.gradient)}>
         <div
           className={cn(
             "w-12 h-12 rounded-xl flex items-center justify-center mb-4",

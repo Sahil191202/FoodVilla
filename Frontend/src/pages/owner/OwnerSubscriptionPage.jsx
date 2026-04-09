@@ -70,9 +70,9 @@ const OwnerSubscriptionPage = () => {
         animate={{ opacity: 1, y: 0 }}
         className={`rounded-2xl p-5 mb-8 flex items-center justify-between ${
           currentPlan === "featured"
-            ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white"
+            ? "bg-linear-to-r from-primary-500 to-primary-600 text-white"
             : currentPlan === "premium"
-            ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white"
+            ? "bg-linear-to-r from-blue-500 to-blue-600 text-white"
             : "bg-gray-100"
         }`}
       >
