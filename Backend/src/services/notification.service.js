@@ -78,6 +78,69 @@ export const sendReservationConfirmation = async ({
   });
 };
 
+// ✅ Subscription confirmation email
+export const sendSubscriptionEmail = async ({
+  email,
+  name,
+  planName,
+  isTrial,
+  trialDays,
+  periodEnd,
+}) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #ef4444;">🎉 Welcome to GoodFoods for Owners!</h2>
+      <p>Hey ${name}, ${isTrial
+        ? `your ${trialDays}-day free trial has started!`
+        : `your ${planName} subscription is now active!`}
+      </p>
+
+      <div style="background: #f8f8f8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3>What happens next?</h3>
+        <p>✅ Your account is under admin review</p>
+        <p>📧 You'll receive an email once approved</p>
+        <p>🚀 After approval, your owner dashboard will be unlocked!</p>
+        ${periodEnd ? `<p>📅 Valid until: ${new Date(periodEnd).toLocaleDateString("en-IN")}</p>` : ""}
+      </div>
+
+      <p>Thank you for choosing GoodFoods!</p>
+    </div>
+  `;
+
+  await sendEmail({
+    to: email,
+    subject: isTrial
+      ? `GoodFoods — Free Trial Started! 🎉`
+      : `GoodFoods — ${planName} Subscription Active! 🎉`,
+    html,
+  });
+};
+
+// ✅ Owner approval email
+export const sendOwnerApprovalEmail = async ({ email, name, approved }) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #ef4444;">
+        ${approved ? "🎉 Owner Account Approved!" : "❌ Owner Application Rejected"}
+      </h2>
+      <p>Hey ${name},</p>
+      ${approved
+        ? `<p>Great news! Your owner account has been approved. You can now access your Owner Dashboard and start listing your restaurants!</p>
+           <a href="${ENV.FRONTEND_URL}/owner" style="background: #ef4444; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">Go to Dashboard</a>`
+        : `<p>Unfortunately, your owner application has been rejected. Please contact support for more information.</p>`
+      }
+    </div>
+  `;
+
+  await sendEmail({
+    to: email,
+    subject: approved
+      ? "GoodFoods — Owner Account Approved! 🎉"
+      : "GoodFoods — Owner Application Update",
+    html,
+  });
+};
+
 // Cancellation email
 export const sendCancellationEmail = async ({
   email,

@@ -6,7 +6,6 @@ const subscriptionSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true, // One active subscription per owner
     },
     plan: {
       type: mongoose.Schema.Types.ObjectId,
@@ -15,7 +14,7 @@ const subscriptionSchema = new mongoose.Schema(
     },
     planName: {
       type: String,
-      enum: ["free", "premium", "featured"],
+      enum: ["free_trial", "premium", "featured"],
       required: true,
     },
     status: {
@@ -24,17 +23,19 @@ const subscriptionSchema = new mongoose.Schema(
       default: "active",
     },
 
-    // Razorpay fields
-    razorpaySubscriptionId: {
-      type: String,
-      default: null,
+    // ✅ Is this a free trial?
+    isTrial: {
+      type: Boolean,
+      default: false,
     },
-    razorpayCustomerId: {
-      type: String,
+    trialEndsAt: {
+      type: Date,
       default: null,
     },
 
-    // Billing dates
+    razorpaySubscriptionId: { type: String, default: null },
+    razorpayCustomerId: { type: String, default: null },
+
     currentPeriodStart: {
       type: Date,
       required: true,
@@ -43,15 +44,10 @@ const subscriptionSchema = new mongoose.Schema(
     currentPeriodEnd: {
       type: Date,
       required: true,
-      // 30 days from start by default
       default: () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     },
-    cancelledAt: {
-      type: Date,
-      default: null,
-    },
+    cancelledAt: { type: Date, default: null },
 
-    // Payment history
     payments: [
       {
         amount: Number,
@@ -69,9 +65,5 @@ const subscriptionSchema = new mongoose.Schema(
 
 subscriptionSchema.index({ owner: 1 });
 subscriptionSchema.index({ status: 1 });
-subscriptionSchema.index({ planName: 1 });
 
-export const Subscription = mongoose.model(
-  "Subscription",
-  subscriptionSchema
-);
+export const Subscription = mongoose.model("Subscription", subscriptionSchema);

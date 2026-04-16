@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    // ✅ Owner specific
+    // ✅ Owner specific fields
     businessName: {
       type: String,
       trim: true,
@@ -47,16 +47,22 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-    // ✅ Subscription info — replaces commissionRate!
+    // ✅ Owner approval status
+    // pending_approval = subscribed but admin hasnt approved yet
+    // approved = admin approved, dashboard accessible
+    // rejected = admin rejected
+    ownerStatus: {
+      type: String,
+      enum: ["none", "pending_approval", "approved", "rejected"],
+      default: "none",
+    },
+
     currentPlan: {
       type: String,
-      enum: ["free", "premium", "featured"],
-      default: "free",
+      enum: ["none", "free_trial", "premium", "featured"],
+      default: "none",
     },
-    isApproved: {
-      type: Boolean,
-      default: false,
-    },
+
     isBanned: {
       type: Boolean,
       default: false,

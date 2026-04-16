@@ -10,6 +10,7 @@ import { Subscription } from "../models/Subscription.model.js";
 import { SubscriptionPlan } from "../models/SubscriptionPlan.model.js";
 import { getPlatformAnalytics } from "../services/analytics.service.js";
 import { USER_ROLES, RESERVATION_STATUS } from "../utils/constants.js";
+import { sendOwnerApprovalEmail } from "../services/notification.service.js";
 
 const router = Router();
 router.use(verifyJWT);
@@ -98,21 +99,32 @@ router.patch("/owners/:id/approval", asyncHandler(async (req, res) => {
 
   const owner = await User.findByIdAndUpdate(
     req.params.id,
-    { isApproved },
-    { new: true }
+    {
+      ownerStatus: isApproved ? "approved" : "rejected",
+    },
+    { returnDocument: "after", runValidators: true },
   ).select("-password -refreshToken");
 
   if (!owner) throw new ApiError(404, "Owner not found");
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        owner,
-        `Owner ${isApproved ? "approved" : "rejected"}`
-      )
-    );
+  // ✅ Send approval/rejection email
+  try {
+    await sendOwnerApprovalEmail({
+      email: owner.email,
+      name: owner.name,
+      approved: isApproved,
+    });
+  } catch (err) {
+    console.error("Approval email failed:", err.message);
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      owner,
+      `Owner ${isApproved ? "approved! Email sent 📧" : "rejected"}`
+    )
+  );
 }));
 
 // Ban / unban owner

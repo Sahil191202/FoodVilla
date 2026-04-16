@@ -5,42 +5,25 @@ const subscriptionPlanSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      enum: ["free", "premium", "featured"],
+      enum: ["free_trial", "premium", "featured"],
     },
     displayName: {
       type: String,
       required: true,
-      // "Free", "Premium", "Featured"
     },
     price: {
       type: Number,
       required: true,
-      // Monthly price in INR — 0 for free
     },
-    billingCycle: {
-      type: String,
-      enum: ["monthly", "yearly"],
-      default: "monthly",
+    trialDays: {
+      type: Number,
+      default: 0, // Only for free_trial plan
     },
-    features: [
-      {
-        type: String,
-        // "Basic booking", "AI Marketing", "Analytics" etc
-      },
-    ],
+    features: [{ type: String }],
     limits: {
-      restaurants: {
-        type: Number,
-        default: 1, // Free = 1 restaurant, Premium = unlimited
-      },
-      imagesPerRestaurant: {
-        type: Number,
-        default: 3, // Free = 3, Premium = unlimited
-      },
-      menuItems: {
-        type: Number,
-        default: 20, // Free = 20, Premium = unlimited
-      },
+      restaurants: { type: Number, default: 1 },
+      imagesPerRestaurant: { type: Number, default: 3 },
+      menuItems: { type: Number, default: 20 },
     },
     isActive: {
       type: Boolean,
@@ -48,7 +31,7 @@ const subscriptionPlanSchema = new mongoose.Schema(
     },
     razorpayPlanId: {
       type: String,
-      default: null, // Razorpay plan ID for recurring billing
+      default: null,
     },
   },
   { timestamps: true }

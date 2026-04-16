@@ -1,50 +1,80 @@
 import Razorpay from "razorpay";
+import crypto from "crypto";
 import { Subscription } from "../models/Subscription.model.js";
 import { SubscriptionPlan } from "../models/SubscriptionPlan.model.js";
 import { User } from "../models/User.model.js";
 import { Restaurant } from "../models/Restaurant.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ENV } from "../config/env.js";
+import { FREE_TRIAL_DAYS, USER_ROLES } from "../utils/constants.js";
+import { sendSubscriptionEmail } from "./notification.service.js";
 
 const razorpay = new Razorpay({
   key_id: ENV.RAZORPAY_KEY_ID,
   key_secret: ENV.RAZORPAY_KEY_SECRET,
 });
 
-// Get all plans
 export const getPlans = async () => {
   return await SubscriptionPlan.find({ isActive: true });
 };
 
-// Get owner's current subscription
-export const getOwnerSubscription = async (ownerId) => {
+export const getOwnerSubscription = async (userId) => {
   const subscription = await Subscription.findOne({
-    owner: ownerId,
+    owner: userId,
     status: "active",
   }).populate("plan");
 
   return subscription;
 };
 
-// Create Razorpay order for subscription payment
-export const createSubscriptionOrder = async (ownerId, planId) => {
+// ✅ User subscribes → becomes owner (pending approval)
+export const subscribeAndBecomeOwner = async ({
+  userId,
+  planId,
+  businessName,
+  businessPhone,
+}) => {
+  const user = await User.findById(userId);
+  const shortUser = userId.toString().slice(-6);
+  if (!user) throw new ApiError(404, "User not found");
+
+  // Already an owner
+  if (user.role === USER_ROLES.OWNER) {
+    throw new ApiError(400, "You are already an owner");
+  }
+
   const plan = await SubscriptionPlan.findById(planId);
   if (!plan) throw new ApiError(404, "Plan not found");
 
-  if (plan.name === "free") {
-    // Free plan — no payment needed
-    return await activateFreePlan(ownerId, plan);
+  // Check if already has active subscription
+  const existingSub = await Subscription.findOne({
+    owner: userId,
+    status: "active",
+  });
+
+  if (existingSub) {
+    throw new ApiError(400, "You already have an active subscription");
   }
 
-  // Create Razorpay order
+  // Free trial — no payment needed
+  if (plan.name === "free_trial" || plan.name === "free") {
+    return await activateFreeTrial(userId, plan, businessName, businessPhone);
+  }
+
+  // 🚨 Safety check
+  if (!plan.price || plan.price < 1) {
+    throw new ApiError(400, "Invalid plan price");
+  }
+
   const order = await razorpay.orders.create({
-    amount: plan.price * 100, // Razorpay needs paise
+    amount: plan.price * 100,
     currency: "INR",
-    receipt: `sub_${ownerId}_${Date.now()}`,
+    receipt: `own_${shortUser}_${Date.now()}`,
     notes: {
-      ownerId: ownerId.toString(),
+      userId: userId.toString(),
       planId: planId.toString(),
       planName: plan.name,
+      type: "become_owner",
     },
   });
 
@@ -52,22 +82,72 @@ export const createSubscriptionOrder = async (ownerId, planId) => {
     orderId: order.id,
     amount: order.amount,
     currency: order.currency,
-    plan: plan,
+    plan,
+    requiresPayment: true,
   };
 };
 
-// Verify payment and activate subscription
-export const verifyAndActivateSubscription = async ({
-  ownerId,
+// ✅ Activate free trial
+const activateFreeTrial = async (userId, plan, businessName, businessPhone) => {
+  const now = new Date();
+  const trialEnd = new Date(
+    now.getTime() + FREE_TRIAL_DAYS * 24 * 60 * 60 * 1000,
+  );
+
+  // Create subscription
+  const subscription = await Subscription.create({
+    owner: userId,
+    plan: plan._id,
+    planName: plan.name,
+    status: "active",
+    isTrial: true,
+    trialEndsAt: trialEnd,
+    currentPeriodStart: now,
+    currentPeriodEnd: trialEnd,
+  });
+
+  // ✅ Update user — role → owner, status → pending_approval
+  await User.findByIdAndUpdate(userId, {
+    role: USER_ROLES.OWNER,
+    ownerStatus: "pending_approval",
+    currentPlan: plan.name,
+    businessName,
+    businessPhone,
+  });
+
+  // Send email to user
+  const user = await User.findById(userId);
+  try {
+    await sendSubscriptionEmail({
+      email: user.email,
+      name: user.name,
+      planName: plan.displayName,
+      isTrial: true,
+      trialDays: FREE_TRIAL_DAYS,
+    });
+  } catch (err) {
+    console.error("Subscription email failed:", err.message);
+  }
+
+  return {
+    subscription,
+    requiresPayment: false,
+    message: `Free trial activated! ${FREE_TRIAL_DAYS} days free. Pending admin approval.`,
+  };
+};
+
+// ✅ Verify payment and activate subscription
+export const verifyPaymentAndActivate = async ({
+  userId,
   planId,
+  businessName,
+  businessPhone,
   razorpayOrderId,
   razorpayPaymentId,
   razorpaySignature,
 }) => {
-  // Verify signature
-  const crypto = await import("crypto");
+  // Verify Razorpay signature
   const expectedSignature = crypto
-    .default
     .createHmac("sha256", ENV.RAZORPAY_KEY_SECRET)
     .update(`${razorpayOrderId}|${razorpayPaymentId}`)
     .digest("hex");
@@ -79,24 +159,25 @@ export const verifyAndActivateSubscription = async ({
   const plan = await SubscriptionPlan.findById(planId);
   if (!plan) throw new ApiError(404, "Plan not found");
 
-  // Deactivate old subscription
-  await Subscription.updateMany(
-    { owner: ownerId, status: "active" },
-    { status: "cancelled", cancelledAt: new Date() }
-  );
-
   const now = new Date();
   const periodEnd = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
+  // Deactivate old subscriptions
+  await Subscription.updateMany(
+    { owner: userId, status: "active" },
+    { status: "cancelled", cancelledAt: now },
+  );
+
   // Create new subscription
   const subscription = await Subscription.create({
-    owner: ownerId,
-    plan: planId,
+    owner: userId,
+    plan: plan._id,
     planName: plan.name,
     status: "active",
-    razorpaySubscriptionId: razorpayOrderId,
+    isTrial: false,
     currentPeriodStart: now,
     currentPeriodEnd: periodEnd,
+    razorpaySubscriptionId: razorpayOrderId,
     payments: [
       {
         amount: plan.price,
@@ -107,53 +188,81 @@ export const verifyAndActivateSubscription = async ({
     ],
   });
 
-  // Update user plan
-  await User.findByIdAndUpdate(ownerId, { currentPlan: plan.name });
+  // Check if user is already an owner (upgrading)
+  const user = await User.findById(userId);
+  const isUpgrade = user.role === USER_ROLES.OWNER;
 
-  // If featured plan — mark all owner restaurants as featured
+  // Update user
+  await User.findByIdAndUpdate(userId, {
+    role: USER_ROLES.OWNER,
+    ownerStatus: isUpgrade ? user.ownerStatus : "pending_approval",
+    currentPlan: plan.name,
+    ...(businessName && { businessName }),
+    ...(businessPhone && { businessPhone }),
+  });
+
+  // If featured plan — mark restaurants as featured
   if (plan.name === "featured") {
     await Restaurant.updateMany(
-      { owner: ownerId, isApproved: true },
-      {
-        isFeatured: true,
-        featuredUntil: periodEnd,
-      }
+      { owner: userId, isApproved: true },
+      { isFeatured: true, featuredUntil: periodEnd },
     );
   }
 
-  return subscription;
+  // Send email
+  try {
+    const updatedUser = await User.findById(userId);
+    await sendSubscriptionEmail({
+      email: updatedUser.email,
+      name: updatedUser.name,
+      planName: plan.displayName,
+      isTrial: false,
+      periodEnd,
+    });
+  } catch (err) {
+    console.error("Subscription email failed:", err.message);
+  }
+
+  return {
+    subscription,
+    isUpgrade,
+    message: isUpgrade
+      ? `Upgraded to ${plan.displayName} successfully!`
+      : `Subscribed! Pending admin approval.`,
+  };
 };
 
-// Activate free plan
-const activateFreePlan = async (ownerId, plan) => {
-  await Subscription.updateMany(
-    { owner: ownerId, status: "active" },
-    { status: "cancelled", cancelledAt: new Date() }
-  );
+// ✅ Upgrade existing owner subscription
+export const upgradeSubscription = async ({ ownerId, planId }) => {
+  const plan = await SubscriptionPlan.findById(planId);
+  if (!plan) throw new ApiError(404, "Plan not found");
 
-  const subscription = await Subscription.create({
-    owner: ownerId,
-    plan: plan._id,
-    planName: "free",
-    status: "active",
-    currentPeriodStart: new Date(),
-    currentPeriodEnd: new Date(
-      Date.now() + 365 * 24 * 60 * 60 * 1000
-    ), // 1 year for free
+  if (plan.name === "free_trial") {
+    throw new ApiError(400, "Cannot upgrade to free trial");
+  }
+
+  const order = await razorpay.orders.create({
+    amount: plan.price * 100,
+    currency: "INR",
+    receipt: `upgrade_${ownerId}_${Date.now()}`,
+    notes: {
+      userId: ownerId.toString(),
+      planId: planId.toString(),
+      planName: plan.name,
+      type: "upgrade",
+    },
   });
 
-  await User.findByIdAndUpdate(ownerId, { currentPlan: "free" });
-
-  // Remove featured if downgraded
-  await Restaurant.updateMany(
-    { owner: ownerId },
-    { isFeatured: false, featuredUntil: null }
-  );
-
-  return subscription;
+  return {
+    orderId: order.id,
+    amount: order.amount,
+    currency: order.currency,
+    plan,
+    requiresPayment: true,
+  };
 };
 
-// Cancel subscription
+// ✅ Cancel subscription
 export const cancelSubscription = async (ownerId) => {
   const subscription = await Subscription.findOne({
     owner: ownerId,
@@ -168,35 +277,38 @@ export const cancelSubscription = async (ownerId) => {
   subscription.cancelledAt = new Date();
   await subscription.save();
 
-  // Downgrade to free
-  await User.findByIdAndUpdate(ownerId, { currentPlan: "free" });
+  // Downgrade user plan
+  await User.findByIdAndUpdate(ownerId, {
+    currentPlan: "none",
+  });
 
   // Remove featured
   await Restaurant.updateMany(
     { owner: ownerId },
-    { isFeatured: false, featuredUntil: null }
+    { isFeatured: false, featuredUntil: null },
   );
 
   return subscription;
 };
 
-// Check if subscription is expired — run as cron job
+// ✅ Check and expire trials/subscriptions — run as cron
 export const checkExpiredSubscriptions = async () => {
   const expired = await Subscription.find({
     status: "active",
     currentPeriodEnd: { $lt: new Date() },
-    planName: { $ne: "free" },
   });
 
   for (const sub of expired) {
     sub.status = "expired";
     await sub.save();
 
-    await User.findByIdAndUpdate(sub.owner, { currentPlan: "free" });
+    await User.findByIdAndUpdate(sub.owner, {
+      currentPlan: "none",
+    });
 
     await Restaurant.updateMany(
       { owner: sub.owner },
-      { isFeatured: false, featuredUntil: null }
+      { isFeatured: false, featuredUntil: null },
     );
 
     console.log(`Subscription expired for owner: ${sub.owner}`);
