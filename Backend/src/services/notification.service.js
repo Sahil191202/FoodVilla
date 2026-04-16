@@ -20,7 +20,7 @@ transporter.verify((error) => {
   if (error) {
     console.error("Mail server connection failed:", error);
   } else {
-    console.log("Mail server ready");
+    console.log("✅Mail server ready");
   }
 });
 

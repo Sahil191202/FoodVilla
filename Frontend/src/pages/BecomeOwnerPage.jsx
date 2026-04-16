@@ -8,7 +8,7 @@ import {
 import { useSelector } from "react-redux";
 import { selectUser } from "../features/auth/authSlice.js";
 import { usePlans, useMySubscription, useSubscribe } from "../hooks/useSubscription.js";
-import PlanCard from "../components/subscription/PlanCard.jsx";
+import PlanCard from "../features/subscription/PlanCard.jsx";
 import Spinner from "../components/ui/Spinner.jsx";
 import Button from "../components/ui/Button.jsx";
 import { useNavigate } from "react-router-dom";

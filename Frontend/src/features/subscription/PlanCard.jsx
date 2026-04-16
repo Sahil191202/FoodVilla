@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Check, Star, Zap, Crown } from "lucide-react";
-import Button from "../ui/Button.jsx";
+import Button from "../../components/ui/Button.jsx";
 import { formatPrice } from "../../utils/formatters.js";
 import { cn } from "../../utils/cn.js";
 
