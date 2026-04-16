@@ -113,7 +113,7 @@ const AdminRestaurantsPage = () => {
               className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
             >
               {/* Image */}
-              <div className="relative h-36 bg-gradient-to-br from-gray-100 to-gray-200">
+              <div className="relative h-36 bg-linear-to-br from-gray-100 to-gray-200">
                 {r.images?.[0] ? (
                   <img
                     src={r.images[0]}

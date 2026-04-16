@@ -10,17 +10,19 @@ import {
   Crown,
   User,
   ChevronDown,
+  Store,
+  LayoutDashboard,
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth.js";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { toggleChat } from "../../features/chat/chatSlice.js";
 import Avatar from "../ui/Avatar.jsx";
 import Button from "../ui/Button.jsx";
 import { cn } from "../../utils/cn.js";
 import { useIsAdmin } from "../../hooks/useAdmin.js";
-import { LayoutDashboard, Store } from "lucide-react";
 import { useIsOwner } from "../../hooks/useOwner.js";
 import { useMySubscription } from "../../hooks/useSubscription.js";
+import { selectUser } from "../../features/auth/authSlice.js";
 
 const navLinks = [
   { label: "Restaurants", href: "/restaurants" },
@@ -28,11 +30,12 @@ const navLinks = [
 ];
 
 const Navbar = () => {
-  const { user, isAuthenticated, logout, isLoggingOut } = useAuth();
+  const { isAuthenticated, logout, isLoggingOut } = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const isAdmin = useIsAdmin();
+  const user = useSelector(selectUser);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -148,7 +151,7 @@ const Navbar = () => {
                           <Link
                             to="/admin"
                             onClick={() => setIsProfileOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                           >
                             <LayoutDashboard
                               size={16}
@@ -158,25 +161,38 @@ const Navbar = () => {
                           </Link>
                         )}
 
-                        {isOwner && hasActiveSubscription && (
-                          <Link
-                            to="/owner"
-                            onClick={() => setIsProfileOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                          >
-                            <Store size={16} className="text-gray-400" />
-                            Owner Dashboard
-                          </Link>
-                        )}
+                        {user?.role === "owner" &&
+                          user?.ownerStatus === "approved" && (
+                            <Link
+                              to="/owner"
+                              onClick={() => setIsProfileOpen(false)}
+                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                            >
+                              <Store size={16} className="text-gray-400" />
+                              Owner Dashboard
+                            </Link>
+                          )}
 
-                        {isOwner && !hasActiveSubscription && (
+                        {user?.role === "owner" &&
+                          user?.ownerStatus === "pending_approval" && (
+                            <Link
+                              to="/owner-pending"
+                              onClick={() => setIsProfileOpen(false)}
+                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-yellow-600 hover:bg-yellow-50"
+                            >
+                              <Crown size={16} className="text-yellow-500" />
+                              Pending Approval ⏳
+                            </Link>
+                          )}
+
+                        {user?.role === "user" && (
                           <Link
                             to="/become-owner"
                             onClick={() => setIsProfileOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-primary-600 hover:bg-primary-50 transition-colors font-medium"
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-primary-600 hover:bg-primary-50 font-medium"
                           >
-                            <Crown size={16} className="text-primary-500" />
-                            Activate Dashboard
+                            <Store size={16} className="text-primary-500" />
+                            Become an Owner
                           </Link>
                         )}
 

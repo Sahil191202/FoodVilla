@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Crown, AlertTriangle, Calendar,
-  CheckCircle, XCircle,
+  Crown,
+  AlertTriangle,
+  Calendar,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import {
   usePlans,
   useMySubscription,
-  useSubscribe,
+  useUpgradeSubscription,
   useCancelSubscription,
 } from "../../hooks/useSubscription.js";
 import PlanCard from "../../components/subscription/PlanCard.jsx";
@@ -26,17 +29,20 @@ const OwnerSubscriptionPage = () => {
 
   const { data: plans, isLoading: plansLoading } = usePlans();
   const { data: subscription, isLoading: subLoading } = useMySubscription();
-  const { mutate: subscribe, isPending: isSubscribing } = useSubscribe();
-  const { mutate: cancelSub, isPending: isCancelling } = useCancelSubscription();
+  const { mutate: cancelSub, isPending: isCancelling } =
+    useCancelSubscription();
 
   const isLoading = plansLoading || subLoading;
   const currentPlan = user?.currentPlan || "free";
+  const { mutate: upgrade, isPending: isUpgrading } = useUpgradeSubscription();
 
-  const handleSelectPlan = (plan) => {
+  const upgradePlans = plans?.filter((p) => p.name !== "free_trial");
+
+  const handleUpgrade = (plan) => {
     setSelectedPlan(plan);
-    subscribe(
+    upgrade(
       { planId: plan._id, planName: plan.name },
-      { onSuccess: () => setSelectedPlan(null) }
+      { onSuccess: () => setSelectedPlan(null) },
     );
   };
 
@@ -51,12 +57,8 @@ const OwnerSubscriptionPage = () => {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">
-          My Subscription 👑
-        </h1>
-        <p className="text-gray-500 mt-1">
-          Manage your GoodFoods plan
-        </p>
+        <h1 className="text-2xl font-bold text-gray-900">My Subscription 👑</h1>
+        <p className="text-gray-500 mt-1">Manage your GoodFoods plan</p>
       </div>
 
       {/* Current Plan */}
@@ -67,27 +69,37 @@ const OwnerSubscriptionPage = () => {
           currentPlan === "featured"
             ? "bg-linear-to-r from-primary-500 to-primary-600 text-white"
             : currentPlan === "premium"
-            ? "bg-linear-to-r from-blue-500 to-blue-600 text-white"
-            : "bg-gray-100"
+              ? "bg-linear-to-r from-blue-500 to-blue-600 text-white"
+              : "bg-gray-100"
         }`}
       >
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
             <Crown
               size={22}
-              className={currentPlan === "free" ? "text-gray-500" : "text-white"}
+              className={
+                currentPlan === "free" ? "text-gray-500" : "text-white"
+              }
             />
           </div>
           <div>
-            <p className={`font-bold text-lg capitalize ${currentPlan === "free" ? "text-gray-900" : "text-white"}`}>
+            <p
+              className={`font-bold text-lg capitalize ${currentPlan === "free" ? "text-gray-900" : "text-white"}`}
+            >
               {currentPlan} Plan
             </p>
-            <p className={currentPlan === "free" ? "text-gray-500 text-sm" : "text-white/80 text-sm"}>
+            <p
+              className={
+                currentPlan === "free"
+                  ? "text-gray-500 text-sm"
+                  : "text-white/80 text-sm"
+              }
+            >
               {currentPlan === "free"
                 ? "Basic features included"
                 : subscription?.currentPeriodEnd
-                ? `Renews on ${formatDate(subscription.currentPeriodEnd)}`
-                : "Active"}
+                  ? `Renews on ${formatDate(subscription.currentPeriodEnd)}`
+                  : "Active"}
             </p>
           </div>
         </div>
@@ -113,7 +125,10 @@ const OwnerSubscriptionPage = () => {
           </div>
           <div className="divide-y divide-gray-50">
             {subscription.payments.map((payment, i) => (
-              <div key={i} className="px-6 py-3 flex items-center justify-between">
+              <div
+                key={i}
+                className="px-6 py-3 flex items-center justify-between"
+              >
                 <div className="flex items-center gap-3">
                   {payment.status === "success" ? (
                     <CheckCircle size={16} className="text-green-500" />
@@ -121,11 +136,18 @@ const OwnerSubscriptionPage = () => {
                     <XCircle size={16} className="text-red-500" />
                   )}
                   <div>
-                    <p className="text-sm font-medium">{formatPrice(payment.amount)}</p>
-                    <p className="text-xs text-gray-400">{formatDate(payment.paidAt)}</p>
+                    <p className="text-sm font-medium">
+                      {formatPrice(payment.amount)}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {formatDate(payment.paidAt)}
+                    </p>
                   </div>
                 </div>
-                <Badge variant={payment.status === "success" ? "success" : "danger"} size="sm">
+                <Badge
+                  variant={payment.status === "success" ? "success" : "danger"}
+                  size="sm"
+                >
                   {payment.status}
                 </Badge>
               </div>
@@ -135,17 +157,15 @@ const OwnerSubscriptionPage = () => {
       )}
 
       {/* Plans */}
-      <h2 className="text-lg font-bold text-gray-900 mb-5">
-        Available Plans
-      </h2>
+      <h2 className="text-lg font-bold text-gray-900 mb-5">Available Plans</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {plans?.map((plan, i) => (
+        {upgradePlans?.map((plan, i) => (
           <PlanCard
             key={plan._id}
             plan={plan}
             currentPlan={currentPlan}
-            onSelect={handleSelectPlan}
-            isLoading={isSubscribing && selectedPlan?._id === plan._id}
+            onSelect={handleUpgrade}
+            isLoading={isUpgrading && selectedPlan?._id === plan._id}
             delay={i * 0.1}
           />
         ))}
@@ -165,7 +185,9 @@ const OwnerSubscriptionPage = () => {
             <Button
               variant="danger"
               isLoading={isCancelling}
-              onClick={() => cancelSub(undefined, { onSuccess: () => setCancelModal(false) })}
+              onClick={() =>
+                cancelSub(undefined, { onSuccess: () => setCancelModal(false) })
+              }
             >
               Yes, Cancel
             </Button>
@@ -180,7 +202,8 @@ const OwnerSubscriptionPage = () => {
             Cancel your {currentPlan} plan?
           </p>
           <p className="text-sm text-gray-500">
-            You will be downgraded to Free plan. All premium features will be removed.
+            You will be downgraded to Free plan. All premium features will be
+            removed.
           </p>
         </div>
       </Modal>

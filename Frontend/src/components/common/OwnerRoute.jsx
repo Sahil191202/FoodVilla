@@ -10,10 +10,13 @@ const OwnerRoute = ({ children }) => {
 
   if (!user) return <Navigate to="/login" replace />;
 
-  // Admin bypass — admin can see everything
+  // ✅ Admin should NEVER see owner dashboard
   if (user.role === "admin") return <Navigate to="/admin" replace />;
 
-  if (user.role !== "owner") return <Navigate to="/" replace />;
+  // Not an owner at all
+  if (user.role !== "owner") {
+    return <Navigate to="/become-owner" replace />;
+  }
 
   if (isLoading) {
     return (
@@ -23,31 +26,36 @@ const OwnerRoute = ({ children }) => {
     );
   }
 
-  // Owner not approved yet
-  if (!user.isApproved) {
+  // Subscribed but pending approval
+  if (user.ownerStatus === "pending_approval") {
+    return <Navigate to="/owner-pending" replace />;
+  }
+
+  // Rejected
+  if (user.ownerStatus === "rejected") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="text-center max-w-md bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-          <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-3xl">⏳</span>
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">❌</span>
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">
-            Account Pending Approval
+            Application Rejected
           </h2>
           <p className="text-gray-500 text-sm">
-            Your owner account is pending admin approval.
-            You will be notified once approved!
+            Your owner application was rejected. Please contact support.
           </p>
         </div>
       </div>
     );
   }
 
-  // ✅ No active subscription — redirect to subscription page
+  // No active subscription
   if (!subscription || subscription.status !== "active") {
     return <Navigate to="/become-owner" replace />;
   }
 
+  // ✅ All checks passed — show dashboard
   return children;
 };
 

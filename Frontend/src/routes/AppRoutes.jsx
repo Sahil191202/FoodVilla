@@ -8,6 +8,7 @@ import PageLoader from "../components/ui/PageLoader.jsx";
 import ErrorBoundary from "../components/common/ErrorBoundary.jsx";
 import OwnerRoute from "../components/common/OwnerRoute.jsx";
 import BecomeOwnerPage from "../pages/BecomeOwnerPage.jsx";
+import OwnerPendingPage from "../pages/OwnerPendingPage.jsx";
 
 // Lazy load pages — faster initial load!
 const HomePage = lazy(() => import("../pages/HomePage.jsx"));
@@ -164,6 +165,7 @@ const AppRoutes = () => {
             />
 
             <Route path="/become-owner" element={<BecomeOwnerPage />} />
+            <Route path="/owner-pending" element={<OwnerPendingPage />} />
 
             <Route
               path="/admin"
