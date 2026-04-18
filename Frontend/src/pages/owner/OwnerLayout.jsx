@@ -8,12 +8,14 @@ import {
   Menu,
   X,
   ChevronRight,
-  LogOut, Crown,
+  LogOut,
+  Crown,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth.js";
 import Avatar from "../../components/ui/Avatar.jsx";
 import { cn } from "../../utils/cn.js";
+import { BookOpen } from "lucide-react";
 
 const NAV_ITEMS = [
   {
@@ -27,6 +29,7 @@ const NAV_ITEMS = [
     href: "/owner/restaurants",
     icon: UtensilsCrossed,
   },
+  { label: "Menu", href: "/owner/menu", icon: BookOpen },
   {
     label: "Reservations",
     href: "/owner/reservations",
@@ -45,7 +48,7 @@ const OwnerLayout = () => {
         "flex flex-col bg-white border-r border-gray-100",
         mobile
           ? "fixed inset-y-0 left-0 z-50 w-72 shadow-2xl"
-          : "hidden lg:flex w-64 min-h-screen sticky top-0"
+          : "hidden lg:flex w-64 min-h-screen sticky top-0",
       )}
     >
       {/* Logo */}
@@ -82,7 +85,7 @@ const OwnerLayout = () => {
                 "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                 isActive
                   ? "bg-primary-50 text-primary-600"
-                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-900",
               )
             }
           >
