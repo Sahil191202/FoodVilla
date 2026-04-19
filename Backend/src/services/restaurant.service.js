@@ -1,7 +1,12 @@
 import { Restaurant } from "../models/Restaurant.model.js";
 import { TimeSlot } from "../models/TimeSlot.model.js";
 import { ApiError } from "../utils/ApiError.js";
-import { getDayName, generateTimeSlots, isSlotBookableToday, getTodayIST } from "./datetime.service.js";
+import {
+  getDayName,
+  generateTimeSlots,
+  isSlotBookableToday,
+  getTodayIST,
+} from "./datetime.service.js";
 
 export const createRestaurant = async (data, managedBy) => {
   const restaurant = await Restaurant.create({ ...data, managedBy });
@@ -9,35 +14,50 @@ export const createRestaurant = async (data, managedBy) => {
 };
 
 // Search restaurants by cuisine and/or area
-export const searchRestaurants = async ({ cuisine, area, date, guests }) => {
-  const query = { isActive: true };
+export const searchRestaurants = async ({
+  cuisine,
+  area,
+  date,
+  guests,
+  ambiance,
+  amenities,
+}) => {
+  const query = {
+    isActive: true,
+    isApproved: true,
+    isBanned: false,
+  };
 
-  if (cuisine) {
-    query.cuisine = { $in: [cuisine] };
+  if (cuisine) query.cuisine = { $in: [cuisine] };
+  if (area) query["address.area"] = { $regex: area, $options: "i" };
+  if (ambiance) query.ambiance = ambiance;
+
+  // ✅ Amenities — match all selected
+  if (amenities?.length) {
+    const amenityList = Array.isArray(amenities)
+      ? amenities
+      : amenities.split(",");
+    query.amenities = { $all: amenityList };
   }
 
-  if (area) {
-    query["address.area"] = { $regex: area, $options: "i" };
-  }
-
-  let restaurants = await Restaurant.find(query).select("-managedBy");
+  // Featured first!
+  let restaurants = await Restaurant.find(query)
+    .sort({ isFeatured: -1, isVerified: -1, rating: -1 })
+    .select("-managedBy");
 
   if (date && guests) {
     const numGuests = Number(guests);
-
     const availableRestaurants = [];
 
     for (const restaurant of restaurants) {
       const dayName = getDayName(date);
       const hours = restaurant.operatingHours[dayName];
+      if (!hours || hours.isClosed) continue;
 
-      // Skip if restaurant closed that day
-      if (!hours || hours.isClosed) {
-        console.log(`${restaurant.name} is closed on ${dayName} — skipping`);
-        continue;
-      }
+      // Check holiday closures
+      const isHoliday = restaurant.holidays?.some((h) => h.date === date);
+      if (isHoliday) continue;
 
-      // Check existing slots in DB
       const bookedSlots = await TimeSlot.find({
         restaurant: restaurant._id,
         date,
@@ -50,15 +70,13 @@ export const searchRestaurants = async ({ cuisine, area, date, guests }) => {
         }
         continue;
       }
-      // Slots exist — check if any slot has enough seats
-      const hasAvailableSlot = bookedSlots.some(
-        (slot) => slot.availableSeats >= numGuests
-      );
 
-      if (hasAvailableSlot) {
-        availableRestaurants.push(restaurant);
-      }
+      const hasAvailableSlot = bookedSlots.some(
+        (slot) => slot.availableSeats >= numGuests,
+      );
+      if (hasAvailableSlot) availableRestaurants.push(restaurant);
     }
+
     return availableRestaurants;
   }
 

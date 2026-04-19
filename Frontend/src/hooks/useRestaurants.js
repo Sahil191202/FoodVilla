@@ -8,7 +8,20 @@ export const useRestaurants = () => {
 
   return useQuery({
     queryKey: ["restaurants", filters],
-    queryFn: () => restaurantService.getAll(filters),
+    queryFn: () => {
+      // ✅ Build params properly
+      const params = {};
+      if (filters.cuisine) params.cuisine = filters.cuisine;
+      if (filters.area) params.area = filters.area;
+      if (filters.date) params.date = filters.date;
+      if (filters.guests && filters.guests !== 2)
+        params.guests = filters.guests;
+      if (filters.ambiance) params.ambiance = filters.ambiance;
+      if (filters.amenities?.length)
+        params.amenities = filters.amenities.join(",");
+
+      return restaurantService.getAll(params);
+    },
     select: (data) => data.data.restaurants,
   });
 };
