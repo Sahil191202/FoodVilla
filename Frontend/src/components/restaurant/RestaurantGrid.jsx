@@ -3,6 +3,7 @@ import RestaurantCard from "./RestaurantCard.jsx";
 import EmptyState from "../ui/EmptyState.jsx";
 import Spinner from "../ui/Spinner.jsx";
 import { useNavigate } from "react-router-dom";
+import ErrorState from "../ui/ErrorState.jsx";
 
 const RestaurantGrid = ({ restaurants, isLoading, error }) => {
   const navigate = useNavigate();
@@ -19,14 +20,14 @@ const RestaurantGrid = ({ restaurants, isLoading, error }) => {
   }
 
   if (error) {
-    return (
-      <EmptyState
-        icon={<span className="text-2xl">😕</span>}
-        title="Something went wrong"
-        description="Failed to load restaurants. Please try again."
-      />
-    );
-  }
+  return (
+    <ErrorState
+      title="Failed to load restaurants"
+      description={error?.message || "Please check your connection and try again"}
+      onRetry={() => refetch()}
+    />
+  );
+}
 
   if (!restaurants?.length) {
     return (
