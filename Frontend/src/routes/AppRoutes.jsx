@@ -61,11 +61,14 @@ const OwnerOverviewPage = lazy(
 const OwnerRestaurantsPage = lazy(
   () => import("../pages/owner/OwnerRestaurantsPage.jsx"),
 );
+const OwnerAnalyticsPage = lazy(
+  () => import("../pages/owner/OwnerAnalyticsPage.jsx"),
+);
 const OwnerReservationsPage = lazy(
   () => import("../pages/owner/OwnerReservationsPage.jsx"),
 );
-const MenuManagementPage = lazy(() =>
-  import("../pages/owner/MenuManagementPage.jsx")
+const MenuManagementPage = lazy(
+  () => import("../pages/owner/MenuManagementPage.jsx"),
 );
 
 // Layout wrapper — Navbar + main content + Footer
@@ -195,6 +198,7 @@ const AppRoutes = () => {
               <Route index element={<OwnerOverviewPage />} />
               <Route path="restaurants" element={<OwnerRestaurantsPage />} />
               <Route path="reservations" element={<OwnerReservationsPage />} />
+              <Route path="analytics" element={<OwnerAnalyticsPage />} />
               <Route path="subscription" element={<OwnerSubscriptionPage />} />
               <Route path="menu" element={<MenuManagementPage />} />
             </Route>

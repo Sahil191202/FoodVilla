@@ -16,6 +16,7 @@ import {
   completeReservation,
   markNoShow,
 } from "../services/reservation.service.js";
+import { getRestaurantAnalytics } from "../services/analytics.service.js";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -147,6 +148,31 @@ router.delete(
 
     return res.status(200).json(
       new ApiResponse(200, restaurant, "Image deleted successfully")
+    );
+  })
+);
+
+// Get analytics for a specific restaurant
+router.get(
+  "/analytics/:restaurantId",
+  asyncHandler(async (req, res) => {
+    const { restaurantId } = req.params;
+    const { days = 30 } = req.query;
+
+    // Verify ownership
+    const restaurant = await Restaurant.findOne({
+      _id: restaurantId,
+      owner: req.user._id,
+    });
+
+    if (!restaurant && req.user.role !== USER_ROLES.ADMIN) {
+      throw new ApiError(403, "Not authorized");
+    }
+
+    const analytics = await getRestaurantAnalytics(restaurantId, Number(days));
+
+    return res.status(200).json(
+      new ApiResponse(200, analytics, "Analytics fetched")
     );
   })
 );

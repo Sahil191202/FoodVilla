@@ -10,6 +10,7 @@ import {
   ChevronRight,
   LogOut,
   Crown,
+  BarChart3,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth.js";
@@ -35,6 +36,7 @@ const NAV_ITEMS = [
     href: "/owner/reservations",
     icon: CalendarDays,
   },
+  { label: "Analytics", href: "/owner/analytics", icon: BarChart3 }, { label: "Analytics", href: "/owner/analytics", icon: BarChart3 }, 
   { label: "Subscription", href: "/owner/subscription", icon: Crown },
 ];
 
