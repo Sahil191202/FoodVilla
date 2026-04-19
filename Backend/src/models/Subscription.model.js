@@ -32,6 +32,10 @@ const subscriptionSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    notifiedTrialEnding: {
+      type: Boolean,
+      default: false,
+    },
 
     razorpaySubscriptionId: { type: String, default: null },
     razorpayCustomerId: { type: String, default: null },
@@ -60,7 +64,7 @@ const subscriptionSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 subscriptionSchema.index({ owner: 1 });

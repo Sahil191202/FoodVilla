@@ -4,10 +4,16 @@ import { CUISINE_TYPES } from "../utils/constants.js";
 const operatingHoursSchema = z.object({
   open: z
     .string()
-    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format. Use HH:MM"),
+    .regex(
+      /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
+      "Invalid time format. Use HH:MM",
+    ),
   close: z
     .string()
-    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format. Use HH:MM"),
+    .regex(
+      /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
+      "Invalid time format. Use HH:MM",
+    ),
   isClosed: z.boolean().default(false),
 });
 
@@ -28,9 +34,7 @@ export const createRestaurantSchema = z.object({
     street: z.string({ required_error: "Street is required" }).trim(),
     area: z.string({ required_error: "Area is required" }).trim(),
     city: z.string().default("Bangalore"),
-    pincode: z
-      .string()
-      .regex(/^\d{6}$/, "Pincode must be 6 digits"),
+    pincode: z.string().regex(/^\d{6}$/, "Pincode must be 6 digits"),
   }),
 
   contact: z.object({
@@ -61,19 +65,20 @@ export const createRestaurantSchema = z.object({
     .min(100),
 });
 
-export const searchRestaurantSchema = z.object({
-  cuisine: z.enum(CUISINE_TYPES).optional(),
-
-  area: z.string().trim().optional(),
-
-  date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
-    .optional(),
-
-  guests: z
-    .string()
-    .transform(Number)
-    .pipe(z.number().min(1).max(20))
-    .optional(),
-}).optional(); // whole schema optional — empty query is fine too!
+export const searchRestaurantSchema = z
+  .object({
+    cuisine: z.enum(CUISINE_TYPES).optional(),
+    area: z.string().trim().optional(),
+    date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD")
+      .optional(),
+    guests: z
+      .string()
+      .transform(Number)
+      .pipe(z.number().int().min(1).max(20))
+      .optional(),
+    ambiance: z.string().optional(), // ✅ New
+    amenities: z.string().optional(), // ✅ New — comma separated
+  })
+  .optional();
