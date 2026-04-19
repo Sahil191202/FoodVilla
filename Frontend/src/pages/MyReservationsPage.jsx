@@ -17,7 +17,7 @@ const TABS = [
 
 const MyReservationsPage = () => {
   const navigate = useNavigate();
-  const { data: reservations, isLoading } = useMyReservations();
+  const { data: reservations, isLoading, error, refetch } = useMyReservations();
   const [activeTab, setActiveTab] = useState("upcoming");
 
   const filtered = reservations?.filter((r) => {

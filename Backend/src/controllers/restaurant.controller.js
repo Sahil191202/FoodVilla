@@ -17,9 +17,8 @@ export const addRestaurant = asyncHandler(async (req, res) => {
 });
 
 export const getRestaurants = asyncHandler(async (req, res) => {
-  const { cuisine, area, date, guests } = req.query;
+  const { cuisine, area, date, guests, ambiance, amenities } = req.query;
 
-  // Parse date if provided
   let parsedDate;
   if (date) parsedDate = parseNaturalDate(date);
 
@@ -28,6 +27,9 @@ export const getRestaurants = asyncHandler(async (req, res) => {
     area,
     date: parsedDate,
     guests: guests ? Number(guests) : undefined,
+    ambiance,
+    // ✅ Convert comma string to array
+    amenities: amenities ? amenities.split(",") : undefined,
   });
 
   return res
@@ -36,8 +38,8 @@ export const getRestaurants = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { count: restaurants.length, restaurants },
-        "Restaurants fetched successfully"
-      )
+        "Restaurants fetched successfully",
+      ),
     );
 });
 
@@ -58,9 +60,19 @@ export const getSlots = asyncHandler(async (req, res) => {
   }
 
   const parsedDate = parseNaturalDate(date);
-  const slots = await getAvailableSlots(restaurantId, parsedDate, Number(guests));
+  const slots = await getAvailableSlots(
+    restaurantId,
+    parsedDate,
+    Number(guests),
+  );
 
   return res
     .status(200)
-    .json(new ApiResponse(200, { date: parsedDate, slots }, "Slots fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        { date: parsedDate, slots },
+        "Slots fetched successfully",
+      ),
+    );
 });
