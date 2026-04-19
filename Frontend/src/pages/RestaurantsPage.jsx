@@ -5,6 +5,7 @@ import RestaurantGrid from "../components/restaurant/RestaurantGrid.jsx";
 import { useRestaurants } from "../hooks/useRestaurants.js";
 import { useSelector } from "react-redux";
 import { selectFilters } from "../features/restaurant/restaurantSlice.js";
+import ErrorState from "../components/ui/ErrorState.jsx";
 
 const RestaurantsPage = () => {
   const { data: restaurants, isLoading, error } = useRestaurants();

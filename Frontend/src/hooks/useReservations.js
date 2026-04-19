@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { reservationService } from "../services/reservation.service.js";
+import ErrorState from "../components/ui/ErrorState.jsx";
 
 export const useMyReservations = () => {
   return useQuery({
@@ -20,8 +21,14 @@ export const useCreateReservation = () => {
       queryClient.invalidateQueries({ queryKey: ["reservations"] });
       toast.success(`Table booked! Code: ${data.data.confirmationCode} 🎉`);
     },
-    onError: (error) => {
-      toast.error(error?.message || "Booking failed");
+    if(error) {
+      return (
+        <ErrorState
+          title="Failed to load reservations"
+          description="Could not fetch your bookings. Please try again."
+          onRetry={() => refetch()}
+        />
+      );
     },
   });
 };
@@ -35,8 +42,14 @@ export const useCancelReservation = () => {
       queryClient.invalidateQueries({ queryKey: ["reservations"] });
       toast.success("Reservation cancelled successfully");
     },
-    onError: (error) => {
-      toast.error(error?.message || "Cancellation failed");
+    if(error) {
+      return (
+        <ErrorState
+          title="Failed to load reservations"
+          description="Could not fetch your bookings. Please try again."
+          onRetry={() => refetch()}
+        />
+      );
     },
   });
 };
