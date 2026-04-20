@@ -12,6 +12,7 @@ import { useCreateReservation } from "../../hooks/useReservations.js";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { formatTime } from "../../utils/formatters.js";
+import Spinner from "../ui/Spinner.jsx";
 
 const schema = z.object({
   date: z

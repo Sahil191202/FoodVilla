@@ -36,7 +36,7 @@ const NAV_ITEMS = [
     href: "/owner/reservations",
     icon: CalendarDays,
   },
-  { label: "Analytics", href: "/owner/analytics", icon: BarChart3 }, { label: "Analytics", href: "/owner/analytics", icon: BarChart3 }, 
+  { label: "Analytics", href: "/owner/analytics", icon: BarChart3 },
   { label: "Subscription", href: "/owner/subscription", icon: Crown },
 ];
 
