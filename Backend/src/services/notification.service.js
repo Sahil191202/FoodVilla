@@ -25,7 +25,7 @@ transporter.verify((error) => {
 });
 
 // Base email sender
-const sendEmail = async ({ to, subject, html }) => {
+export const sendEmail = async ({ to, subject, html }) => {
   const mailOptions = {
     from: `"GoodFoods" <${ENV.MAIL.USER}>`,
     to,
