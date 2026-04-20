@@ -18,8 +18,8 @@ FoodVilla is a full-stack MERN application that enables users to discover restau
 
 ## 🚀 Live Demo
 
-🔗 **Frontend:** *Coming Soon*
-🔗 **Backend API:** *Coming Soon*
+🔗 **Frontend:** *https://foodvilla-zb5g.onrender.com*
+🔗 **Backend API:** *https://food-villa-ai.vercel.app*
 
 ---
 
@@ -88,30 +88,33 @@ FoodVilla is a full-stack MERN application that enables users to discover restau
 
 ## 📸 Screenshots
 
+
 > 📌 Replace these with your actual screenshots
 
 ### 🏠 Home Page
 
 <p align="center">
-  <img src="https://via.placeholder.com/800x400?text=Home+Page" />
+  <img width="800" height="400" alt="Homepage" src="https://github.com/user-attachments/assets/50b46c56-369f-462b-a1ae-cd3e8ecada34" />
 </p>
 
-### 🍽️ Restaurant Listing
+### 🍽️ Admin
 
 <p align="center">
-  <img src="https://via.placeholder.com/800x400?text=Restaurant+Listing" />
+  <img width="800" height="400" alt="admin" src="https://github.com/user-attachments/assets/ff749f9f-19d8-40c4-a947-128f071467f7" />
+  <br/>
+  <img width="800" height="400" alt="admianaly" src="https://github.com/user-attachments/assets/51908fb3-4680-447e-bb3f-075beb7707a9" />
 </p>
 
 ### 📅 Booking Page
 
 <p align="center">
-  <img src="https://via.placeholder.com/800x400?text=Booking+Page" />
+  <img width="800" height="400" alt="userRes" src="https://github.com/user-attachments/assets/56157dd2-c198-497d-a514-859edca8d7da" />
 </p>
 
 ### 🤖 AI Chat
 
 <p align="center">
-  <img src="https://via.placeholder.com/800x400?text=AI+Chat" />
+  <img width="800" height="400" alt="AiChat" src="https://github.com/user-attachments/assets/d24816f3-8e68-44ee-b6e2-70e2e892dca8" />
 </p>
 
 ---
