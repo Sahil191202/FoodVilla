@@ -57,9 +57,9 @@ export const PLAN_COLORS = {
 };
 
 export const AREAS = [
-  "Koramangala", "Indiranagar", "HSR Layout",
-  "Whitefield", "Jayanagar", "JP Nagar",
-  "Marathahalli", "Electronic City", "Banjara Hills",
+  "Andheri", "Bandra", "Borivali",
+  "Kandivali", "Malad", "Goregaon",
+  "Dahisar", "Bhayandar", "Marine Lines",
 ];
 
 export const STATUS_COLORS = {

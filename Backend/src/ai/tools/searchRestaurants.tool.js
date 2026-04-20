@@ -7,7 +7,7 @@ export const searchRestaurantsTool = {
   type: "function",
   function: {
     name: "searchRestaurants",
-    description: "Search restaurants by cuisine, area, ambiance, amenities and date in Bangalore",
+    description: "Search restaurants by cuisine, area, ambiance, amenities and date in Mumbai",
     parameters: {
       type: "object",
       properties: {
