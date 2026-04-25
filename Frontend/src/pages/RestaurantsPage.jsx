@@ -6,7 +6,7 @@ import { useRestaurants } from "../hooks/useRestaurants.js";
 import { useSelector } from "react-redux";
 import { selectFilters } from "../features/restaurant/restaurantSlice.js";
 import ErrorState from "../components/ui/ErrorState.jsx";
-<BackButton to="home" label="Back to Home" className="mt-4" />
+import BackButton from "../components/common/BackButton.jsx";
 
 const RestaurantsPage = () => {
   const { data: restaurants, isLoading, error } = useRestaurants();
