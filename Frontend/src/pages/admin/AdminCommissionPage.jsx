@@ -9,6 +9,7 @@ import Spinner from "../../components/ui/Spinner.jsx";
 import Avatar from "../../components/ui/Avatar.jsx";
 import { formatPrice, formatDate } from "../../utils/formatters.js";
 import { cn } from "../../utils/cn.js";
+import BackButton from "../../components/common/BackButton.jsx";
 
 const StatCard = ({ icon, label, value, color, delay }) => (
   <motion.div
@@ -75,6 +76,7 @@ const AdminCommissionPage = () => {
   return (
     <div>
       <div className="mb-8">
+      <BackButton to="home" label="Back to App" className="mb-6" />
         <h1 className="text-2xl font-bold text-gray-900">
           Commission Dashboard 💰
         </h1>

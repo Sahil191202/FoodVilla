@@ -23,6 +23,7 @@ import { useIsAdmin } from "../../hooks/useAdmin.js";
 import { useIsOwner } from "../../hooks/useOwner.js";
 import { useMySubscription } from "../../hooks/useSubscription.js";
 import { selectUser } from "../../features/auth/authSlice.js";
+import BackButton from "./BackButton.jsx";
 
 const navLinks = [
   { label: "Restaurants", href: "/restaurants" },
@@ -262,6 +263,7 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && isAuthenticated && (
           <div className="md:hidden border-t border-gray-100 py-3 animate-fade-in">
+          <BackButton to="home" label="Home" className="mx-1 mb-1" />
             {navLinks.map((link) => (
               <Link
                 key={link.href}

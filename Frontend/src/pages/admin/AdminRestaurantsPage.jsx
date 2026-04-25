@@ -16,6 +16,7 @@ import Modal from "../../components/ui/Modal.jsx";
 import Spinner from "../../components/ui/Spinner.jsx";
 import { formatPrice } from "../../utils/formatters.js";
 import { useDebounce } from "../../hooks/useDebounce.js";
+import BackButton from "../../components/common/BackButton.jsx";
 
 const AdminRestaurantsPage = () => {
   const [search, setSearch] = useState("");
@@ -53,6 +54,7 @@ const AdminRestaurantsPage = () => {
     <div>
       {/* Header */}
       <div className="mb-6">
+      <BackButton to="home" label="Back to App" className="mb-6" />
         <h1 className="text-2xl font-bold text-gray-900">
           All Restaurants
         </h1>

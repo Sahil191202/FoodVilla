@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button.jsx";
 import { Home, ArrowLeft } from "lucide-react";
+import BackButton from "../components/common/BackButton.jsx";
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
@@ -49,8 +50,8 @@ const NotFoundPage = () => {
           transition={{ delay: 0.4 }}
           className="text-gray-500 mb-8"
         >
-          Looks like this page ran out of stock. Let's get you back to
-          something delicious!
+          Looks like this page ran out of stock. Let's get you back to something
+          delicious!
         </motion.p>
 
         <motion.div
@@ -59,20 +60,10 @@ const NotFoundPage = () => {
           transition={{ delay: 0.5 }}
           className="flex items-center justify-center gap-3"
         >
-          <Button
-            variant="outline"
-            leftIcon={<ArrowLeft size={16} />}
-            onClick={() => navigate(-1)}
-          >
-            Go Back
-          </Button>
-          <Button
-            variant="primary"
-            leftIcon={<Home size={16} />}
-            onClick={() => navigate("/")}
-          >
-            Go Home
-          </Button>
+          <div className="flex items-center justify-center gap-3 mt-6">
+            <BackButton to="back" label="Go Back" />
+            <BackButton to="home" label="Go Home" />
+          </div>
         </motion.div>
       </motion.div>
     </div>

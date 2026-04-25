@@ -18,6 +18,7 @@ import Spinner from "../../components/ui/Spinner.jsx";
 import Avatar from "../../components/ui/Avatar.jsx";
 import { formatDate } from "../../utils/formatters.js";
 import { useDebounce } from "../../hooks/useDebounce.js";
+import BackButton from "../../components/common/BackButton.jsx";
 
 // ✅ Updated OwnerCard with proper approve/reject toggle
 const OwnerCard = ({ owner, onApprove, onReject, onCommission }) => {
@@ -150,6 +151,7 @@ const AdminOwnersPage = () => {
     <div>
       {/* Header */}
       <div className="mb-6">
+      <BackButton to="home" label="Back to App" className="mb-6" />
         <h1 className="text-2xl font-bold text-gray-900">
           Restaurant Owners
         </h1>

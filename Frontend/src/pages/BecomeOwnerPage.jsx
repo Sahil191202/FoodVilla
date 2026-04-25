@@ -28,6 +28,7 @@ import Modal from "../components/ui/Modal.jsx";
 import Spinner from "../components/ui/Spinner.jsx";
 import { formatPrice } from "../utils/formatters.js";
 import { cn } from "../utils/cn.js";
+import BackButton from "../components/common/BackButton.jsx";
 
 const businessSchema = z.object({
   businessName: z.string().min(2, "Business name required"),
@@ -278,6 +279,7 @@ const BecomeOwnerPage = () => {
           </motion.div>
         </div>
       </section>
+      <BackButton to="home" className="mt-4" />
 
       {/* Benefits */}
       <section className="py-16 px-4">

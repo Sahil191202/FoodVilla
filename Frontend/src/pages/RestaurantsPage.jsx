@@ -6,6 +6,7 @@ import { useRestaurants } from "../hooks/useRestaurants.js";
 import { useSelector } from "react-redux";
 import { selectFilters } from "../features/restaurant/restaurantSlice.js";
 import ErrorState from "../components/ui/ErrorState.jsx";
+<BackButton to="home" label="Back to Home" className="mt-4" />
 
 const RestaurantsPage = () => {
   const { data: restaurants, isLoading, error } = useRestaurants();
@@ -23,6 +24,7 @@ const RestaurantsPage = () => {
         animate={{ opacity: 1, y: 0 }}
         className="mb-6"
       >
+      <BackButton to="home" className="mb-4" />
         <h1 className="text-3xl font-bold text-gray-900 mb-1">
           Restaurants 🍽️
         </h1>

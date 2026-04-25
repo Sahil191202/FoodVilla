@@ -18,6 +18,7 @@ import { formatDate, formatPrice } from "../../utils/formatters.js";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../features/auth/authSlice.js";
 import { cn } from "../../utils/cn.js";
+import BackButton from "../../components/common/BackButton.jsx";
 
 const PLAN_ICONS = {
   free_trial: <Zap size={18} className="text-gray-600" />,
@@ -149,6 +150,7 @@ const OwnerSubscriptionPage = () => {
   return (
     <div>
       {/* Header */}
+      <BackButton to="home" label="Back to App" className="mb-6" />
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">
           My Subscription 👑

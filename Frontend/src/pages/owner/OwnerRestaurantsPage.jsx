@@ -28,6 +28,7 @@ import Spinner from "../../components/ui/Spinner.jsx";
 import { CUISINE_TYPES } from "../../utils/constants.js";
 import { formatPrice } from "../../utils/formatters.js";
 import { useRef } from "react";
+import BackButton from "../../components/common/BackButton.jsx";
 
 const DAYS = [
   "monday",
@@ -475,6 +476,7 @@ const OwnerRestaurantsPage = () => {
   return (
     <div>
       {/* Header */}
+      <BackButton to="home" label="Back to App" className="mb-6" />
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">My Restaurants</h1>

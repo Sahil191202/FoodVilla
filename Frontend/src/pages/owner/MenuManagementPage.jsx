@@ -35,6 +35,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { menuService } from "../../services/menu.service.js";
 import api from "../../services/api.js";
 import toast from "react-hot-toast";
+import BackButton from "../../components/common/BackButton.jsx";
 
 const CATEGORIES = [
   "Starters",
@@ -533,6 +534,7 @@ const MenuManagementPage = () => {
 
   return (
     <div>
+    <BackButton to="home" label="Back to App" className="mb-6" />
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>

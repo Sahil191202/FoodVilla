@@ -8,6 +8,7 @@ import Spinner from "../components/ui/Spinner.jsx";
 import { useNavigate } from "react-router-dom";
 import { RESERVATION_STATUS } from "../utils/constants.js";
 import { cn } from "../utils/cn.js";
+import BackButton from "../components/common/BackButton.jsx";
 
 const TABS = [
   { label: "Upcoming", value: "upcoming" },
@@ -44,6 +45,7 @@ const MyReservationsPage = () => {
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
       >
+      <BackButton to="home" className="mb-6" />
         <h1 className="text-3xl font-bold text-gray-900 mb-1">
           My Reservations 📅
         </h1>

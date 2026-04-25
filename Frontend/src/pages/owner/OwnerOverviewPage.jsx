@@ -13,6 +13,7 @@ import Spinner from "../../components/ui/Spinner.jsx";
 import Badge from "../../components/ui/Badge.jsx";
 import { formatDate, formatTime, formatPrice } from "../../utils/formatters.js";
 import { cn } from "../../utils/cn.js";
+import BackButton from "../../components/common/BackButton.jsx";
 
 const StatCard = ({ icon, label, value, sub, color, delay }) => (
   <motion.div
@@ -108,6 +109,7 @@ const OwnerOverviewPage = () => {
   return (
     <div>
       {/* Header */}
+      <BackButton to="home" label="Back to App" className="mb-6" />
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">
           Welcome back! 👋

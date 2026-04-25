@@ -10,6 +10,7 @@ import Avatar from "../../components/ui/Avatar.jsx";
 import Spinner from "../../components/ui/Spinner.jsx";
 import { formatPrice, formatDate } from "../../utils/formatters.js";
 import { cn } from "../../utils/cn.js";
+import BackButton from "../../components/common/BackButton.jsx";
 
 const PLAN_ICONS = {
   free: <Zap size={14} className="text-gray-500" />,
@@ -109,6 +110,7 @@ const AdminSubscriptionsPage = () => {
   return (
     <div>
       <div className="mb-8">
+      <BackButton to="home" label="Back to App" className="mb-6" />
         <h1 className="text-2xl font-bold text-gray-900">
           Subscriptions & Revenue 💰
         </h1>

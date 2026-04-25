@@ -12,6 +12,7 @@ import { useMyRestaurants } from "../../hooks/useOwner.js";
 import { useRestaurantAnalytics } from "../../hooks/useAnalytics.js";
 import Select from "../../components/ui/Select.jsx";
 import Spinner from "../../components/ui/Spinner.jsx";
+import BackButton from "../../components/common/BackButton.jsx";
 
 const StatCard = ({ icon, label, value, sub, color, delay }) => (
   <motion.div
@@ -131,6 +132,7 @@ const OwnerAnalyticsPage = () => {
 
   return (
     <div>
+    <BackButton to="home" label="Back to App" className="mb-6" />
       <div className="mb-6">
         <h1
           className="text-2xl font-bold font-display"

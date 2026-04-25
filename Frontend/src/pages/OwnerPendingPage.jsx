@@ -7,6 +7,7 @@ import { authService } from "../services/auth.service.js";
 import Button from "../components/ui/Button.jsx";
 import { Home, Clock, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
+import BackButton from "../components/common/BackButton.jsx";
 
 const OwnerPendingPage = () => {
   const navigate = useNavigate();
@@ -123,14 +124,7 @@ const OwnerPendingPage = () => {
         </p>
 
         <div className="flex gap-3">
-          <Button
-            variant="outline"
-            fullWidth
-            leftIcon={<Home size={16} />}
-            onClick={() => navigate("/")}
-          >
-            Back to Home
-          </Button>
+          <BackButton to="home" label="Back to Home" className="mt-4" />
           <Button
             variant="primary"
             fullWidth

@@ -9,6 +9,7 @@ import Spinner from "../../components/ui/Spinner.jsx";
 import { formatDate, formatTime } from "../../utils/formatters.js";
 import { RESERVATION_STATUS } from "../../utils/constants.js";
 import { useDebounce } from "../../hooks/useDebounce.js";
+import BackButton from "../../components/common/BackButton.jsx";
 
 const STATUS_OPTIONS = [
   { label: "All Status", value: "" },
@@ -46,6 +47,7 @@ const AdminReservationsPage = () => {
     <div>
       {/* Header */}
       <div className="mb-6">
+      <BackButton to="home" label="Back to App" className="mb-6" />
         <h1 className="text-2xl font-bold text-gray-900">Reservations</h1>
         <p className="text-gray-500 mt-1">
           {reservations?.length || 0} total reservations
