@@ -30,7 +30,7 @@ FoodVilla is a full-stack MERN application that enables users to discover restau
 
 ## 🎥 Demo Preview
 
-> ⚡ Replace this GIF with your actual project demo
+> ⚡ Lets Gooooo!
 
 <p align="center">
   <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd3J4c2R1ZzZlZ3d3bHZqOXFqN2F3aW9hY3l5b3k2bHk2M2M2d2YyNiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l0MYt5jPR6QX5pnqM/giphy.gif" width="80%" />
@@ -94,7 +94,7 @@ FoodVilla is a full-stack MERN application that enables users to discover restau
 ## 📸 Screenshots
 
 
-> 📌 Replace these with your actual screenshots
+> 📌 Screenshots
 
 ### 🏠 Home Page
 
@@ -267,18 +267,5 @@ If you like this project:
 ## 📜 License
 
 MIT License
-
----
-
-## 💡 Pro Tips (Important for You)
-
-* Replace:
-
-  * GIF → screen recording (use **ScreenToGif** or OBS)
-  * Screenshots → your actual UI images
-* Add:
-
-  * ⭐ GitHub stars badge later
-  * 🚀 Deployment link when live
 
 ---
